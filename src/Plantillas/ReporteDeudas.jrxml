@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6a24a398-beba-4a46-96d2-325f89718989">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="206"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="783"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dataset1" uuid="1d489e81-a264-4cc6-b75c-aa836a8d4c98"/>
+	<queryString>
+		<![CDATA[SELECT
+     contrato."folio_contrato" AS folio_contrato,(cliente."nombre" ||' '|| cliente."apellido_p" ||' '|| cliente."apellido_m") AS nombre_cliente,
+     lectura_pago."fecha_hora" AS lectura_pago_fecha_hora,
+     lectura_pago."adeudo" AS lectura_pago_adeudo,
+     cat_mes."mes" AS cat_mes_mes,
+     contrato."deuda" AS contrato_deuda
+FROM
+     "public"."cliente" cliente INNER JOIN "public"."contrato" contrato ON cliente."folio_cte" = contrato."folio_cte"
+     INNER JOIN "public"."lectura_pago" lectura_pago ON contrato."folio_contrato" = lectura_pago."folio_contrato"
+     INNER JOIN "public"."cat_mes" cat_mes ON lectura_pago."id_m" = cat_mes."id_m" where lectura_pago."adeudo" <> 0.0
+order by contrato."folio_contrato"]]>
+	</queryString>
+	<field name="folio_contrato" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="folio_contrato"/>
+		<property name="com.jaspersoft.studio.field.label" value="folio_contrato"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="nombre_cliente" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_cliente"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_cliente"/>
+	</field>
+	<field name="lectura_pago_fecha_hora" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="lectura_pago_fecha_hora"/>
+		<property name="com.jaspersoft.studio.field.label" value="lectura_pago_fecha_hora"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lectura_pago"/>
+	</field>
+	<field name="lectura_pago_adeudo" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="lectura_pago_adeudo"/>
+		<property name="com.jaspersoft.studio.field.label" value="lectura_pago_adeudo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="lectura_pago"/>
+	</field>
+	<field name="cat_mes_mes" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="cat_mes_mes"/>
+		<property name="com.jaspersoft.studio.field.label" value="cat_mes_mes"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cat_mes"/>
+	</field>
+	<field name="contrato_deuda" class="java.lang.Double">
+		<property name="com.jaspersoft.studio.field.name" value="contrato_deuda"/>
+		<property name="com.jaspersoft.studio.field.label" value="contrato_deuda"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<group name="Cliente Group">
+		<groupExpression><![CDATA[$F{nombre_cliente}]]></groupExpression>
+		<groupHeader>
+			<band height="35">
+				<rectangle radius="10">
+					<reportElement x="0" y="0" width="555" height="34" backcolor="#62ADFC" uuid="7ef0592a-26ce-4f2c-8ba2-83fd35c781cb"/>
+				</rectangle>
+				<textField>
+					<reportElement x="418" y="0" width="100" height="34" forecolor="#FFFFFF" uuid="71bf38f5-9967-490b-a318-09d301016e48"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{contrato_deuda}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="165" y="1" width="224" height="32" forecolor="#FFFFFF" uuid="df00f23c-5292-4606-8585-63386246dc5f"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{nombre_cliente}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="15" y="0" width="65" height="34" uuid="062930d6-21e0-465b-8401-82326dc17823"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{folio_contrato}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="150" y="22" width="255" height="33" uuid="7e2d4993-07a1-4e95-84e0-33e350113523"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Reporte de adeudos]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="150" height="79" uuid="333dd07c-374f-4a38-81d9-d4410311c444"/>
+				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\Gestion\\src\\Imagenes\\logogspa.png"]]></imageExpression>
+			</image>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="430" y="35" width="100" height="20" uuid="7c08fd92-4db1-4c55-8598-5a235cb41a71"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="15" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="34" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement x="0" y="0" width="555" height="34" backcolor="#3399FF" uuid="d8ce7006-00f3-4c0e-8d5a-8c125942d123"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="143" y="0" width="100" height="34" uuid="e602dc56-6392-43b8-87d5-6a62c5a5145d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Meses de adeudo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="296" y="0" width="72" height="34" uuid="02d39b09-71d1-469f-b96c-5f5793202715"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Cantidad ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="418" y="0" width="100" height="34" uuid="44819152-6e1a-463d-8405-186851ad6d14"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Total de la deuda]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="15" y="0" width="65" height="34" uuid="3c1c3daa-dd87-4cea-b8ee-c66d8cb56f5d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[N° Contrato]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="143" y="0" width="100" height="20" uuid="a594e3a7-671b-4ac4-86ea-eb4fb21f41ab"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{cat_mes_mes}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="296" y="0" width="72" height="20" uuid="47f861db-cb7a-4cc1-9c87-be73148cc5bb"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{lectura_pago_adeudo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="23" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="195" y="25" width="80" height="20" uuid="26d12227-a65c-4c45-bdcb-394b7428d890"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="275" y="25" width="40" height="20" uuid="2fd7df05-a8ea-45f7-bca8-e54c6f88026a"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="37" y="0" width="43" height="54" uuid="cdabf1e5-3d70-400d-b00c-4934364ef3af"/>
+				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\Gestion\\src\\Imagenes\\icons8-water-100.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

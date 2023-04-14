@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="Blank_A4" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="3857894b-5f49-48ad-b928-9f2fbffc71f3">
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="400"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="588"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="144"/>
+	<parameter name="Contrato" class="java.lang.Integer"/>
+	<parameter name="Texto legal" class="java.lang.String"/>
+	<parameter name="Fecha_act" class="java.lang.String"/>
+	<parameter name="Fecha" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT contrato.folio_contrato,
+	cliente.folio_cte,
+	(cliente.nombre || ' ' || cliente.apellido_p || ' ' || cliente.apellido_m) as nombre_cliente,
+	contrato.nombre_calle,
+	contrato.residencia,
+	contrato.municipio,
+	contrato.numero_mzn,
+	contrato.numero_lt,
+	cat_consumo.tipo_consumo
+FROM contrato
+	INNER JOIN cliente ON 
+	 contrato.folio_cte = cliente.folio_cte 
+	INNER JOIN cat_consumo ON 
+	 contrato.id_consumo = cat_consumo.id_consumo 
+WHERE 
+	 contrato.folio_contrato = $P{Contrato}]]>
+	</queryString>
+	<field name="folio_contrato" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="folio_contrato"/>
+		<property name="com.jaspersoft.studio.field.label" value="folio_contrato"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="folio_cte" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="folio_cte"/>
+		<property name="com.jaspersoft.studio.field.label" value="folio_cte"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cliente"/>
+	</field>
+	<field name="nombre_cliente" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_cliente"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_cliente"/>
+	</field>
+	<field name="nombre_calle" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre_calle"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre_calle"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="residencia" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="residencia"/>
+		<property name="com.jaspersoft.studio.field.label" value="residencia"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="municipio" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="municipio"/>
+		<property name="com.jaspersoft.studio.field.label" value="municipio"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="numero_mzn" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="numero_mzn"/>
+		<property name="com.jaspersoft.studio.field.label" value="numero_mzn"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="numero_lt" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="numero_lt"/>
+		<property name="com.jaspersoft.studio.field.label" value="numero_lt"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="tipo_consumo" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="tipo_consumo"/>
+		<property name="com.jaspersoft.studio.field.label" value="tipo_consumo"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="cat_consumo"/>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="95" splitType="Stretch">
+			<staticText>
+				<reportElement x="156" y="0" width="243" height="94" uuid="61f46509-afea-4965-a9c0-6c3fc195f89a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Gestion de Servicio Público de Agua]]></text>
+			</staticText>
+			<image>
+				<reportElement x="-19" y="0" width="175" height="94" uuid="b308bc7b-c097-44d6-9914-44ae972111c1"/>
+				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\Gestion\\src\\Imagenes\\logogspa.png"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="68" splitType="Stretch">
+			<staticText>
+				<reportElement x="19" y="0" width="126" height="30" uuid="d3cadf44-ffb8-469f-8abf-aeb6e7499cb0">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Cacahoatán, Chiapas a ]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="147" y="0" width="230" height="30" uuid="47d72c35-29d8-48eb-8f42-b947269c84ef"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Fecha_act}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="38" width="111" height="20" uuid="7afcb4f7-3bdb-4bd1-b8d3-a3dcc38d86a2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Solicutud: Contrato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="150" y="38" width="97" height="20" uuid="f26d44f0-8f45-49f1-af0f-8ed30fbd1b5b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Folio del contrato:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="247" y="38" width="33" height="20" uuid="fd41b45e-f296-4fdd-93fb-5d350afbf51d">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{folio_contrato}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="362" splitType="Stretch">
+			<textField>
+				<reportElement x="129" y="20" width="197" height="20" uuid="8ec79a54-6c56-40fc-855e-bcb7587541f8">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<box topPadding="0" leftPadding="0" bottomPadding="1" rightPadding="0">
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_cliente}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="414" y="20" width="33" height="20" uuid="7dcb8d55-da3f-47d5-97d9-35fb08717b33">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{folio_cte}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="89" y="50" width="201" height="20" uuid="d6d5bbfd-f2fd-447e-b2ef-a44a68041e82"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{nombre_calle}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="350" y="50" width="50" height="20" uuid="191d5224-6926-46da-b986-4b46366ee90a"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero_mzn}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="430" y="50" width="50" height="20" uuid="65fc2518-72c7-4a0d-a0d2-1012ca844379"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{numero_lt}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="20" width="110" height="20" uuid="67582b39-321e-4a28-8978-e4a11f05408b">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.x" value="px"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Nombre del cliente:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="326" y="20" width="88" height="20" uuid="9db20db4-a6fa-4408-b292-21ed1315e6fa">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Folio del cliente:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="290" y="50" width="60" height="20" uuid="91e1e9ee-f89b-4dc1-a5bb-e6d0030eefdb"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Manzana:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="50" width="30" height="20" uuid="ed31a2f7-3dbc-435d-8ce4-50afcf590e49"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Lote:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="19" y="330" width="516" height="32" uuid="bd116eae-ac6c-4a00-98e8-e47920a8e361"/>
+				<textElement>
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Texto legal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="119" y="200" width="200" height="30" uuid="1e267ee2-b0d2-4bd0-a639-8236042048a2">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Fecha}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="200" width="100" height="30" uuid="0e4def70-c8be-4d19-86d4-847b577f23b2"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Fecha de registro:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="19" y="50" width="70" height="20" uuid="aaa03e44-7f45-44be-9860-ff0488ce7bbc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Ubicado en:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="19" y="140" width="110" height="20" uuid="c5a78250-8fc1-46b4-969c-fe456208f67b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[TIPO DE SERVICIO]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="19" y="170" width="110" height="20" uuid="26815f3a-1716-477b-8711-226fb1897fc2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{tipo_consumo}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="270" width="163" height="30" uuid="dce6b664-108f-4c66-a9c3-b250132e15c7"/>
+				<box>
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+					<topPen lineColor="#FFFFFF"/>
+					<leftPen lineColor="#FFFFFF"/>
+					<rightPen lineColor="#FFFFFF"/>
+				</box>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="19" y="300" width="163" height="30" uuid="7e24f182-b0b5-44d5-aee5-a4505e743086"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Nombre y firma del solicitante]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="270" width="163" height="30" uuid="37dd21ba-05f1-42f7-8d3f-4a13c742353e"/>
+				<box>
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+					<topPen lineColor="#FFFFFF"/>
+					<leftPen lineColor="#FFFFFF"/>
+					<rightPen lineColor="#FFFFFF"/>
+				</box>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="372" y="300" width="163" height="30" uuid="2af89a5f-dc74-4a80-87bb-073cfd9918eb"/>
+				<textElement>
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Nombre y firma de aprobacion]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="82" y="80" width="100" height="20" uuid="8d950faa-a9d0-426f-bc45-5f0fdbb63d63"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{residencia}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="80" width="63" height="20" uuid="75987975-579f-41a7-9837-07c3ba325c76">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Residencia:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="74" y="111" width="100" height="18" uuid="b48404ad-d37b-42c3-88b5-6b0997e71e8f">
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{municipio}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="19" y="111" width="55" height="18" uuid="d28e08cd-515e-40e5-9df8-8bf2c45c1448">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				</reportElement>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12"/>
+				</textElement>
+				<text><![CDATA[Municipio:]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="31" splitType="Stretch">
+			<textField>
+				<reportElement x="180" y="0" width="100" height="30" uuid="791aa2a8-9cef-42e8-8143-f65e3838a351"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="280" y="0" width="100" height="30" uuid="d2b8392f-93aa-4314-bfb3-74c4a017a78c"/>
+				<textElement textAlignment="Left"/>
+				<textFieldExpression><![CDATA[" of " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="509" y="1" width="26" height="30" uuid="40610093-7e4f-40a8-91d4-c3339622ac5f"/>
+				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\Gestion\\src\\Imagenes\\icons8-water-100.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageFooter>
+</jasperReport>
