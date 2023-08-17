@@ -1,10 +1,9 @@
 package Vista;
 
-import Entity.Cliente;
-import Entity.Empresa;
-import Entity.Logeo;
-import Entity.ticket_generado;
-import java.awt.Component;
+import Modelo.Cliente;
+import Modelo.Empresa;
+import Modelo.Logeo;
+import Modelo.ticket_generado;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.HeadlessException;
@@ -48,7 +47,6 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
         pie_pagina = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
-        S_a_c_v = new javax.swing.JLabel();
         Empresa = new javax.swing.JLabel();
         muniest = new javax.swing.JLabel();
         rfc = new javax.swing.JLabel();
@@ -85,7 +83,6 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
         jLabel26 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         Empresa1 = new javax.swing.JLabel();
-        S_a_c_v1 = new javax.swing.JLabel();
         rfc1 = new javax.swing.JLabel();
         muniest1 = new javax.swing.JLabel();
         jLabel27 = new javax.swing.JLabel();
@@ -146,7 +143,7 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
         pie_pagina.setText("x");
         pie_pagina.setVerticalAlignment(javax.swing.SwingConstants.TOP);
         pie_pagina.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
-        Imprimir.add(pie_pagina, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 460, 380, 30));
+        Imprimir.add(pie_pagina, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 460, 430, 30));
 
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -155,10 +152,6 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
 
         jLabel9.setText("----------------------------------------------------------------------------------------------------------");
         Imprimir.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 150, -1, -1));
-
-        S_a_c_v.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        S_a_c_v.setText("x");
-        Imprimir.add(S_a_c_v, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 40, 120, 10));
 
         Empresa.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         Empresa.setText("x");
@@ -262,10 +255,10 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
         Imprimir.add(jLabel24, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, -1, -1));
 
         jLabel25.setText("************************************************************************");
-        Imprimir.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 450, 360, -1));
+        Imprimir.add(jLabel25, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 450, 360, -1));
 
         jLabel26.setText("************************************************************************");
-        Imprimir.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 490, -1, -1));
+        Imprimir.add(jLabel26, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 490, -1, -1));
 
         jLabel6.setText("----------------------------------------------------------------------------------------------------------");
         Imprimir.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 20, -1, -1));
@@ -273,10 +266,6 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
         Empresa1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         Empresa1.setText("x");
         Imprimir.add(Empresa1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 30, 260, 20));
-
-        S_a_c_v1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
-        S_a_c_v1.setText("x");
-        Imprimir.add(S_a_c_v1, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 40, 140, 10));
 
         rfc1.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         rfc1.setText("x");
@@ -378,14 +367,14 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
         Imprimir.add(total1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 430, 100, -1));
 
         jLabel45.setText("************************************************************************");
-        Imprimir.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 450, -1, -1));
+        Imprimir.add(jLabel45, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 450, -1, -1));
 
         pie_pagina1.setText("x");
         pie_pagina1.setVerticalAlignment(javax.swing.SwingConstants.TOP);
-        Imprimir.add(pie_pagina1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 460, 410, 30));
+        Imprimir.add(pie_pagina1, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 460, 430, 30));
 
         jLabel46.setText("************************************************************************");
-        Imprimir.add(jLabel46, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 490, -1, -1));
+        Imprimir.add(jLabel46, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 490, -1, -1));
 
         jLabel47.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jLabel47.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -461,16 +450,14 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
     private void InformacionEmpresa() {
         Empresa EMP = new Empresa();
         Empresa.setText(EMP.getRazon_social());
-        S_a_c_v.setText(EMP.getSa());
         muniest.setText(EMP.getMunicipio() + ", " + EMP.getEstado());
         rfc.setText(EMP.getRFC());
-        pie_pagina.setText("<html><center>" + EMP.getPie());
+        pie_pagina.setText("<html><center>" + EMP.getPie() + "</center></html>");
 
         Empresa1.setText(EMP.getRazon_social());
-        S_a_c_v1.setText(EMP.getSa());
         muniest1.setText(EMP.getMunicipio() + ", " + EMP.getEstado());
         rfc1.setText(EMP.getRFC());
-        pie_pagina1.setText("<html><center>" + EMP.getPie());
+        pie_pagina1.setText("<html><center>" + EMP.getPie() + "</center></html>");
     }
 
     private void InformacionCliente(Cliente CL) {
@@ -492,7 +479,7 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
                 g.print();
             }
             JOptionPane.showMessageDialog(this, "Exito", "Impresion", JOptionPane.INFORMATION_MESSAGE);
-
+            this.dispose();
         } catch (HeadlessException | PrinterException e) {
             JOptionPane.showMessageDialog(this, "Error al imprimir", "Impresion", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -503,8 +490,6 @@ public class TicketVista extends javax.swing.JDialog implements Printable {
     private javax.swing.JPanel Imprimir;
     private javax.swing.JLabel Operador;
     private javax.swing.JLabel Operador1;
-    private javax.swing.JLabel S_a_c_v;
-    private javax.swing.JLabel S_a_c_v1;
     private javax.swing.JLabel cargo_generado;
     private javax.swing.JLabel cargo_generado1;
     private javax.swing.JLabel descuento;

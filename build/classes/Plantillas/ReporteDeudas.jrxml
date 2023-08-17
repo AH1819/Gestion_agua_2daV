@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.20.0.final using JasperReports Library version 6.20.0-2bc7ab61c56f459e8176eb05c7705e145cd400ad  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6a24a398-beba-4a46-96d2-325f89718989">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
@@ -29,6 +28,9 @@
 		</box>
 	</style>
 	<subDataset name="dataset1" uuid="1d489e81-a264-4cc6-b75c-aa836a8d4c98"/>
+	<parameter name="total" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
      contrato."folio_contrato" AS folio_contrato,(cliente."nombre" ||' '|| cliente."apellido_p" ||' '|| cliente."apellido_m") AS nombre_cliente,
@@ -85,7 +87,9 @@ order by contrato."folio_contrato"]]>
 				</textField>
 				<textField>
 					<reportElement x="165" y="1" width="224" height="32" forecolor="#FFFFFF" uuid="df00f23c-5292-4606-8585-63386246dc5f"/>
-					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12"/>
+					</textElement>
 					<textFieldExpression><![CDATA[$F{nombre_cliente}]]></textFieldExpression>
 				</textField>
 				<textField>
@@ -113,7 +117,7 @@ order by contrato."folio_contrato"]]>
 			</staticText>
 			<image>
 				<reportElement x="0" y="0" width="150" height="79" uuid="333dd07c-374f-4a38-81d9-d4410311c444"/>
-				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\Gestion\\src\\Imagenes\\logogspa.png"]]></imageExpression>
+				<imageExpression><![CDATA["D:\\Documentos\\Proyects\\Gestion\\src\\Imagenes\\logogspa.png"]]></imageExpression>
 			</image>
 			<textField pattern="EEEEE dd MMMMM yyyy">
 				<reportElement x="430" y="35" width="100" height="20" uuid="7c08fd92-4db1-4c55-8598-5a235cb41a71"/>
@@ -166,7 +170,16 @@ order by contrato."folio_contrato"]]>
 		</band>
 	</detail>
 	<columnFooter>
-		<band height="23" splitType="Stretch"/>
+		<band height="23" splitType="Stretch">
+			<textField>
+				<reportElement x="455" y="3" width="100" height="20" uuid="5cb8eb25-20d4-4f35-b4d9-baf2425dc19a"/>
+				<textFieldExpression><![CDATA[$P{total}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="418" y="3" width="37" height="20" uuid="812f1d4e-4777-42a0-81d6-ed34cbe22db1"/>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
+		</band>
 	</columnFooter>
 	<pageFooter>
 		<band height="54" splitType="Stretch">
@@ -181,7 +194,7 @@ order by contrato."folio_contrato"]]>
 			</textField>
 			<image>
 				<reportElement x="37" y="0" width="43" height="54" uuid="cdabf1e5-3d70-400d-b00c-4934364ef3af"/>
-				<imageExpression><![CDATA["D:\\Documentos\\NetBeansProjects\\Gestion\\src\\Imagenes\\icons8-water-100.png"]]></imageExpression>
+				<imageExpression><![CDATA["D:\\Documentos\\Proyects\\Gestion\\src\\Imagenes\\icons8-water-100.png"]]></imageExpression>
 			</image>
 		</band>
 	</pageFooter>

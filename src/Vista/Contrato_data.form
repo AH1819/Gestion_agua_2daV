@@ -21,11 +21,6 @@
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="Contrato" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="Regresar" min="-2" pref="100" max="-2" attributes="0"/>
-                      <EmptySpace pref="750" max="32767" attributes="0"/>
-                      <Component id="Registrar" min="-2" pref="100" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="1" attributes="0">
                           <Group type="103" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jLabel14" max="32767" attributes="0"/>
@@ -36,7 +31,7 @@
                               <Component id="Municipio" pref="170" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace type="separate" max="32767" attributes="0"/>
+                      <EmptySpace type="separate" pref="91" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
                               <Component id="jLabel11" max="32767" attributes="0"/>
@@ -47,37 +42,46 @@
                               <Component id="jLabel15" max="32767" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="79" max="32767" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jLabel12" min="-2" pref="141" max="-2" attributes="0"/>
                           <Component id="Nombre_calle" min="-2" pref="170" max="-2" attributes="0"/>
                           <Component id="Consumo" min="-2" pref="170" max="-2" attributes="0"/>
                           <Component id="Tipo_c" min="-2" pref="170" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
+                      <EmptySpace pref="40" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
-                              <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                                  <Component id="Referencia" pref="150" max="32767" attributes="0"/>
+                              <Group type="103" groupAlignment="1" max="-2" attributes="0">
+                                  <Component id="Referencia" pref="190" max="32767" attributes="0"/>
                                   <Component id="rerefencia" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
                           </Group>
-                          <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
-                              <Component id="Tarifa" max="32767" attributes="0"/>
-                              <Component id="tarifa" min="-2" pref="160" max="-2" attributes="0"/>
-                          </Group>
+                          <Component id="Tarifa" alignment="1" pref="200" max="32767" attributes="0"/>
+                          <Component id="tarifa_label" alignment="1" max="32767" attributes="0"/>
                       </Group>
                   </Group>
-                  <Group type="102" alignment="0" attributes="0">
-                      <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                          <Component id="observacione" max="32767" attributes="0"/>
-                          <Component id="jScrollPane1" pref="270" max="32767" attributes="0"/>
+                  <Group type="102" alignment="1" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="0" groupAlignment="1" max="-2" attributes="0">
+                              <Component id="observacione" max="32767" attributes="0"/>
+                              <Component id="jScrollPane1" pref="270" max="32767" attributes="0"/>
+                          </Group>
+                          <Component id="Regresar" alignment="0" min="-2" pref="100" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
-                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="Periodo" pref="200" max="32767" attributes="0"/>
-                          <Component id="Tipo_p" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="103" alignment="1" groupAlignment="0" max="-2" attributes="0">
+                              <Component id="Periodo" pref="200" max="32767" attributes="0"/>
+                              <Component id="Tipo_p" max="32767" attributes="0"/>
+                          </Group>
+                          <Group type="102" alignment="1" attributes="0">
+                              <Component id="Registrar" min="-2" pref="100" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="espera" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace min="-2" pref="73" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
                   </Group>
               </Group>
@@ -117,7 +121,7 @@
                               <Component id="Manzana" min="-2" pref="40" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
-                              <Component id="tarifa" min="-2" pref="40" max="-2" attributes="0"/>
+                              <Component id="tarifa_label" min="-2" pref="40" max="-2" attributes="0"/>
                               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
                               <Component id="Tarifa" min="-2" pref="40" max="-2" attributes="0"/>
                           </Group>
@@ -142,15 +146,21 @@
                   <Component id="jScrollPane1" min="-2" pref="100" max="-2" attributes="0"/>
                   <Component id="Periodo" min="-2" pref="40" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="40" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="Regresar" min="-2" pref="40" max="-2" attributes="0"/>
+                  <Group type="102" attributes="0">
+                      <EmptySpace pref="40" max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="Regresar" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                          <Component id="Registrar" alignment="3" min="-2" pref="40" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace min="0" pref="60" max="32767" attributes="0"/>
+                  </Group>
                   <Group type="102" alignment="0" attributes="0">
-                      <EmptySpace min="10" pref="10" max="-2" attributes="0"/>
-                      <Component id="Registrar" min="-2" pref="40" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="25" max="-2" attributes="0"/>
+                      <Component id="espera" min="-2" pref="66" max="-2" attributes="0"/>
+                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
               </Group>
-              <EmptySpace min="0" pref="50" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -429,7 +439,7 @@
         <Property name="text" type="java.lang.String" value="Tipo de consumo:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JLabel" name="tarifa">
+    <Component class="javax.swing.JLabel" name="tarifa_label">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Roboto" size="14" style="0"/>
@@ -580,6 +590,13 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="RegistrarActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="espera">
+      <Properties>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/Recursos/cargando.gif"/>
+        </Property>
+      </Properties>
     </Component>
   </SubComponents>
 </Form>

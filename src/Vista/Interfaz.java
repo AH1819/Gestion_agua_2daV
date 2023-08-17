@@ -1,45 +1,49 @@
 package Vista;
 
-import Dao.EmpresaDao;
-import Entity.Empresa;
+import Modelo.Empresa;
+import Modelo.ErrorsAndSuccessesBD;
+import Modelo.Logeo;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import static java.awt.Frame.ICONIFIED;
 import java.awt.Image;
+import java.awt.Toolkit;
 import static java.lang.Thread.sleep;
 import java.time.LocalDate;
+import java.util.Timer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 /**
  *
  * @author Hitler
  */
-public class Interfaz extends javax.swing.JFrame {
+public final class Interfaz extends javax.swing.JFrame {
 
-    EmpresaDao ED = new EmpresaDao();
+    int Xmouse, Ymouse;
     Empresa EMP = new Empresa();
-    PrincipalResponsive pl = new PrincipalResponsive();
+    PrincipalResponsive pl;
+    Timer timer = new Timer();
     boolean opcion = false;
-    private int posX = 0;
 
     public Interfaz() {
         initComponents();
-        ED.EmpresaData();
+        pl = new PrincipalResponsive();
         this.setSize(new Dimension(1200, 600));
-        this.setLocationRelativeTo(this);
-        fecha();
-        LogoIcon();
-        Promo.setText(EMP.getEslogan_mov());
+        this.setLocationRelativeTo(null);
         new Thread() {
             public void run() {
                 eslogan();
             }
         }.start();
+        fecha();
+        LogoIcon();
+        Paneles(pl);
     }
 
     private void fecha() {
@@ -57,6 +61,13 @@ public class Interfaz extends javax.swing.JFrame {
         Image imgEscalada = imgIcon.getImage().getScaledInstance(199, 99, Image.SCALE_SMOOTH);
         Icon iconoEscalado = new ImageIcon(imgEscalada);
         Logo.setIcon(iconoEscalado);
+    }
+
+    public Image getIconImage() {
+        Image retValue = Toolkit.getDefaultToolkit().
+                getImage(ClassLoader.getSystemResource("Recursos/gota_agua.png"));
+
+        return retValue;
     }
 
     @SuppressWarnings("unchecked")
@@ -104,6 +115,7 @@ public class Interfaz extends javax.swing.JFrame {
         Logo = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setIconImage(getIconImage());
         setMinimumSize(new java.awt.Dimension(250, 600));
         setUndecorated(true);
 
@@ -115,9 +127,29 @@ public class Interfaz extends javax.swing.JFrame {
 
         Panel_head.setBackground(new java.awt.Color(13, 71, 161));
         Panel_head.setPreferredSize(new java.awt.Dimension(994, 105));
+        Panel_head.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                Panel_headMouseDragged(evt);
+            }
+        });
+        Panel_head.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                Panel_headMousePressed(evt);
+            }
+        });
 
         Panel_movimiento.setOpaque(false);
         Panel_movimiento.setPreferredSize(new java.awt.Dimension(150, 100));
+        Panel_movimiento.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                Panel_movimientoMouseDragged(evt);
+            }
+        });
+        Panel_movimiento.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                Panel_movimientoMousePressed(evt);
+            }
+        });
 
         Panel_opciones.setPreferredSize(new java.awt.Dimension(150, 100));
         Panel_opciones.setLayout(new java.awt.BorderLayout());
@@ -192,6 +224,16 @@ public class Interfaz extends javax.swing.JFrame {
         Ruta.setForeground(new java.awt.Color(255, 255, 255));
         Ruta.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         Ruta.setText("Administracion/Principal");
+        Ruta.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            public void mouseDragged(java.awt.event.MouseEvent evt) {
+                RutaMouseDragged(evt);
+            }
+        });
+        Ruta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                RutaMousePressed(evt);
+            }
+        });
 
         Fecha.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Fecha.setForeground(new java.awt.Color(255, 255, 255));
@@ -202,9 +244,9 @@ public class Interfaz extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(Ruta, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
+                .addComponent(Ruta, javax.swing.GroupLayout.DEFAULT_SIZE, 243, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Fecha, javax.swing.GroupLayout.DEFAULT_SIZE, 593, Short.MAX_VALUE)
+                .addComponent(Fecha, javax.swing.GroupLayout.DEFAULT_SIZE, 603, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -240,28 +282,31 @@ public class Interfaz extends javax.swing.JFrame {
         Panel_head.setLayout(Panel_headLayout);
         Panel_headLayout.setHorizontalGroup(
             Panel_headLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Panel_movimiento, javax.swing.GroupLayout.DEFAULT_SIZE, 994, Short.MAX_VALUE)
-            .addComponent(Promo, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(Panel_movimiento, javax.swing.GroupLayout.DEFAULT_SIZE, 1014, Short.MAX_VALUE)
+            .addGroup(Panel_headLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(Promo, javax.swing.GroupLayout.PREFERRED_SIZE, 392, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         Panel_headLayout.setVerticalGroup(
             Panel_headLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(Panel_headLayout.createSequentialGroup()
                 .addComponent(Panel_movimiento, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Promo, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(Promo, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         Lado_derecho.add(Panel_head, java.awt.BorderLayout.PAGE_START);
 
-        Contenedor.setLayout(new java.awt.CardLayout());
+        Contenedor.setLayout(new java.awt.BorderLayout());
         Lado_derecho.add(Contenedor, java.awt.BorderLayout.CENTER);
 
         Menu.setBackground(new java.awt.Color(13, 71, 161));
 
         Opcion_1.setBackground(new java.awt.Color(21, 124, 195));
         Opcion_1.setMinimumSize(new java.awt.Dimension(109, 40));
-        Opcion_1.setPreferredSize(new java.awt.Dimension(109, 40));
+        Opcion_1.setPreferredSize(new java.awt.Dimension(130, 50));
         Opcion_1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 Opcion_1MouseEntered(evt);
@@ -273,16 +318,29 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_1MousePressed(evt);
             }
         });
-        Opcion_1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Princ.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Princ.setForeground(new java.awt.Color(255, 255, 255));
         Princ.setText("Principal");
-        Opcion_1.add(Princ, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, -1, 30));
 
         home.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         home.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/home.png"))); // NOI18N
-        Opcion_1.add(home, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
+
+        javax.swing.GroupLayout Opcion_1Layout = new javax.swing.GroupLayout(Opcion_1);
+        Opcion_1.setLayout(Opcion_1Layout);
+        Opcion_1Layout.setHorizontalGroup(
+            Opcion_1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_1Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(home, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(Princ))
+        );
+        Opcion_1Layout.setVerticalGroup(
+            Opcion_1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(home, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
+            .addComponent(Princ, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         Opcion_2.setBackground(new java.awt.Color(18, 90, 173));
         Opcion_2.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -296,16 +354,29 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_2MousePressed(evt);
             }
         });
-        Opcion_2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Servicios");
-        Opcion_2.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 70, 30));
 
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/servicio.png"))); // NOI18N
-        Opcion_2.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
+
+        javax.swing.GroupLayout Opcion_2Layout = new javax.swing.GroupLayout(Opcion_2);
+        Opcion_2.setLayout(Opcion_2Layout);
+        Opcion_2Layout.setHorizontalGroup(
+            Opcion_2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_2Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel10)
+                .addGap(20, 20, 20)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        Opcion_2Layout.setVerticalGroup(
+            Opcion_2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel10, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         Opcion_3.setBackground(new java.awt.Color(18, 90, 173));
         Opcion_3.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -319,16 +390,29 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_3MousePressed(evt);
             }
         });
-        Opcion_3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/libro_abierto.png"))); // NOI18N
-        Opcion_3.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Contrato");
-        Opcion_3.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, -1, 30));
+
+        javax.swing.GroupLayout Opcion_3Layout = new javax.swing.GroupLayout(Opcion_3);
+        Opcion_3.setLayout(Opcion_3Layout);
+        Opcion_3Layout.setHorizontalGroup(
+            Opcion_3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_3Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(jLabel4))
+        );
+        Opcion_3Layout.setVerticalGroup(
+            Opcion_3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
+            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         Opcion_4.setBackground(new java.awt.Color(18, 90, 173));
         Opcion_4.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -342,16 +426,29 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_4MousePressed(evt);
             }
         });
-        Opcion_4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/clientes.png"))); // NOI18N
-        Opcion_4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Clientes");
-        Opcion_4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 60, 30));
+
+        javax.swing.GroupLayout Opcion_4Layout = new javax.swing.GroupLayout(Opcion_4);
+        Opcion_4.setLayout(Opcion_4Layout);
+        Opcion_4Layout.setHorizontalGroup(
+            Opcion_4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_4Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        Opcion_4Layout.setVerticalGroup(
+            Opcion_4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel7, javax.swing.GroupLayout.DEFAULT_SIZE, 49, Short.MAX_VALUE)
+            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         Opcion_5.setBackground(new java.awt.Color(18, 90, 173));
         Opcion_5.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -365,20 +462,34 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_5MousePressed(evt);
             }
         });
-        Opcion_5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Admin_l.setBackground(new java.awt.Color(255, 255, 255));
         Admin_l.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Admin_l.setForeground(new java.awt.Color(255, 255, 255));
         Admin_l.setText("Administrador");
-        Opcion_5.add(Admin_l, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 100, 30));
 
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/administrador.png"))); // NOI18N
-        Opcion_5.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
+
+        javax.swing.GroupLayout Opcion_5Layout = new javax.swing.GroupLayout(Opcion_5);
+        Opcion_5.setLayout(Opcion_5Layout);
+        Opcion_5Layout.setHorizontalGroup(
+            Opcion_5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_5Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(20, 20, 20)
+                .addComponent(Admin_l, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        Opcion_5Layout.setVerticalGroup(
+            Opcion_5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jLabel13, javax.swing.GroupLayout.DEFAULT_SIZE, 51, Short.MAX_VALUE)
+            .addComponent(Admin_l, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         Opcion_6.setBackground(new java.awt.Color(18, 90, 173));
         Opcion_6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        Opcion_6.setPreferredSize(new java.awt.Dimension(199, 50));
         Opcion_6.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 Opcion_6MouseEntered(evt);
@@ -390,20 +501,36 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_6MousePressed(evt);
             }
         });
-        Opcion_6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel15.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/informacion.png"))); // NOI18N
-        Opcion_6.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
 
         About.setBackground(new java.awt.Color(255, 255, 255));
         About.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         About.setForeground(new java.awt.Color(255, 255, 255));
         About.setText("Acerca");
-        Opcion_6.add(About, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 60, 30));
+
+        javax.swing.GroupLayout Opcion_6Layout = new javax.swing.GroupLayout(Opcion_6);
+        Opcion_6.setLayout(Opcion_6Layout);
+        Opcion_6Layout.setHorizontalGroup(
+            Opcion_6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_6Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel15)
+                .addGap(20, 20, 20)
+                .addComponent(About, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        Opcion_6Layout.setVerticalGroup(
+            Opcion_6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_6Layout.createSequentialGroup()
+                .addComponent(About, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
 
         Opcion_7.setBackground(new java.awt.Color(18, 90, 173));
         Opcion_7.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        Opcion_7.setPreferredSize(new java.awt.Dimension(199, 50));
         Opcion_7.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 Opcion_7MouseEntered(evt);
@@ -415,17 +542,31 @@ public class Interfaz extends javax.swing.JFrame {
                 Opcion_7MousePressed(evt);
             }
         });
-        Opcion_7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         Admin_l1.setBackground(new java.awt.Color(255, 255, 255));
         Admin_l1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         Admin_l1.setForeground(new java.awt.Color(255, 255, 255));
         Admin_l1.setText("Cerrar session");
-        Opcion_7.add(Admin_l1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 110, 30));
 
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel14.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/salida.png"))); // NOI18N
-        Opcion_7.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 30, 30));
+
+        javax.swing.GroupLayout Opcion_7Layout = new javax.swing.GroupLayout(Opcion_7);
+        Opcion_7.setLayout(Opcion_7Layout);
+        Opcion_7Layout.setHorizontalGroup(
+            Opcion_7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(Opcion_7Layout.createSequentialGroup()
+                .addGap(10, 10, 10)
+                .addComponent(jLabel14)
+                .addGap(18, 18, 18)
+                .addComponent(Admin_l1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+        Opcion_7Layout.setVerticalGroup(
+            Opcion_7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(Admin_l1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout MenuLayout = new javax.swing.GroupLayout(Menu);
         Menu.setLayout(MenuLayout);
@@ -435,7 +576,7 @@ public class Interfaz extends javax.swing.JFrame {
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(MenuLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(Opcion_6, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Opcion_1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(Opcion_1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 199, Short.MAX_VALUE)
                     .addComponent(Opcion_2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(Opcion_3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(Opcion_4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -449,19 +590,19 @@ public class Interfaz extends javax.swing.JFrame {
             .addGroup(MenuLayout.createSequentialGroup()
                 .addComponent(Logo, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Opcion_1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Opcion_1, javax.swing.GroupLayout.DEFAULT_SIZE, 52, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(Opcion_2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Opcion_2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(Opcion_3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Opcion_3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(Opcion_4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Opcion_4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(Opcion_5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 145, Short.MAX_VALUE)
-                .addComponent(Opcion_6, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(Opcion_5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(137, 137, 137)
+                .addComponent(Opcion_6, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE)
                 .addGap(0, 0, 0)
-                .addComponent(Opcion_7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(Opcion_7, javax.swing.GroupLayout.DEFAULT_SIZE, 53, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout Panel_principalLayout = new javax.swing.GroupLayout(Panel_principal);
@@ -471,7 +612,7 @@ public class Interfaz extends javax.swing.JFrame {
             .addGroup(Panel_principalLayout.createSequentialGroup()
                 .addComponent(Menu, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Lado_derecho, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(Lado_derecho, javax.swing.GroupLayout.DEFAULT_SIZE, 1014, Short.MAX_VALUE))
         );
         Panel_principalLayout.setVerticalGroup(
             Panel_principalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -494,7 +635,7 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Opcion_1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_1MouseEntered
-        ClickOpcion(Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_6, Opcion_7, 1);
+        ClickOpcion(Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_6, Opcion_7);
     }//GEN-LAST:event_Opcion_1MouseEntered
 
     private void Opcion_1MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_1MouseExited
@@ -502,14 +643,14 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_Opcion_1MouseExited
 
     private void Opcion_1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_1MousePressed
-        ClickOpcion(Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_6, Opcion_7, 1);
+        ClickOpcion(Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_6, Opcion_7);
         opcion = true;
         Ruta.setText("Administracion/Principal");
         Paneles(pl);
     }//GEN-LAST:event_Opcion_1MousePressed
 
     private void Opcion_2MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_2MouseEntered
-        ClickOpcion(Opcion_2, Opcion_1, Opcion_3, Opcion_4, Opcion_5, Opcion_6, Opcion_7, 1);
+        ClickOpcion(Opcion_2, Opcion_1, Opcion_3, Opcion_4, Opcion_5, Opcion_6, Opcion_7);
     }//GEN-LAST:event_Opcion_2MouseEntered
 
     private void Opcion_2MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_2MouseExited
@@ -518,16 +659,17 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void Opcion_2MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_2MousePressed
         Ruta.setText("Administracion/Servicio");
-        new Thread() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 Servicio_Responsive SR = new Servicio_Responsive();
                 Paneles(SR);
             }
-        }.start();
+        });
     }//GEN-LAST:event_Opcion_2MousePressed
 
     private void Opcion_3MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_3MouseEntered
-        ClickOpcion(Opcion_3, Opcion_1, Opcion_2, Opcion_4, Opcion_5, Opcion_6, Opcion_7, 1);
+        ClickOpcion(Opcion_3, Opcion_1, Opcion_2, Opcion_4, Opcion_5, Opcion_6, Opcion_7);
     }//GEN-LAST:event_Opcion_3MouseEntered
 
     private void Opcion_3MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_3MouseExited
@@ -536,16 +678,17 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void Opcion_3MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_3MousePressed
         Ruta.setText("Administracion/Contratos");
-        new Thread() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 Contrato_Vista CV = new Contrato_Vista();
                 Paneles(CV);
             }
-        }.start();
+        });
     }//GEN-LAST:event_Opcion_3MousePressed
 
     private void Opcion_4MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_4MouseEntered
-        ClickOpcion(Opcion_4, Opcion_1, Opcion_2, Opcion_3, Opcion_5, Opcion_6, Opcion_7, 1);
+        ClickOpcion(Opcion_4, Opcion_1, Opcion_2, Opcion_3, Opcion_5, Opcion_6, Opcion_7);
     }//GEN-LAST:event_Opcion_4MouseEntered
 
     private void Opcion_4MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_4MouseExited
@@ -554,16 +697,17 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void Opcion_4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_4MousePressed
         Ruta.setText("Administracion/Clientes");
-        new Thread() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 Cliente_Vista ClV = new Cliente_Vista();
                 Paneles(ClV);
             }
-        }.start();
+        });
     }//GEN-LAST:event_Opcion_4MousePressed
 
     private void Opcion_5MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_5MouseEntered
-        ClickOpcion(Opcion_5, Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_6, Opcion_7, 1);
+        ClickOpcion(Opcion_5, Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_6, Opcion_7);
     }//GEN-LAST:event_Opcion_5MouseEntered
 
     private void Opcion_5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_5MouseExited
@@ -572,16 +716,17 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void Opcion_5MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_5MousePressed
         Ruta.setText("Administracion/Administrador");
-        new Thread() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
-                Administracion AD = new Administracion();
+                Admin AD = new Admin();
                 Paneles(AD);
             }
-        }.start();
+        });
     }//GEN-LAST:event_Opcion_5MousePressed
 
     private void Opcion_6MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_6MouseEntered
-        ClickOpcion(Opcion_6, Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_7, 1);
+        ClickOpcion(Opcion_6, Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_7);
     }//GEN-LAST:event_Opcion_6MouseEntered
 
     private void Opcion_6MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_6MouseExited
@@ -590,10 +735,12 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void Opcion_6MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_6MousePressed
         Ruta.setText("Administracion/Acerca");
+        About about = new About();
+        Paneles(about);
     }//GEN-LAST:event_Opcion_6MousePressed
 
     private void Opcion_7MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_7MouseEntered
-        ClickOpcion(Opcion_7, Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_6, 1);
+        ClickOpcion(Opcion_7, Opcion_1, Opcion_2, Opcion_3, Opcion_4, Opcion_5, Opcion_6);
     }//GEN-LAST:event_Opcion_7MouseEntered
 
     private void Opcion_7MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_7MouseExited
@@ -601,7 +748,14 @@ public class Interfaz extends javax.swing.JFrame {
     }//GEN-LAST:event_Opcion_7MouseExited
 
     private void Opcion_7MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Opcion_7MousePressed
-
+        ErrorsAndSuccessesBD pe = new ErrorsAndSuccessesBD();
+        Login p2 = new Login();
+        if (pe.isConexion() == true) {
+            pe.setConexion(false);
+            Logeo l = new Logeo("", "");
+            this.dispose();
+            p2.setVisible(true);
+        }
     }//GEN-LAST:event_Opcion_7MousePressed
 
     private void jLabel6MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MousePressed
@@ -646,53 +800,51 @@ public class Interfaz extends javax.swing.JFrame {
         changecolor(Visible_off, new Color(13, 71, 161));
     }//GEN-LAST:event_VisibleMouseExited
 
-    public static void main(String args[]) {
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Dark nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+    private void Panel_movimientoMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel_movimientoMouseDragged
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Interfaz().setVisible(true);
-            }
-        });
-    }
+    }//GEN-LAST:event_Panel_movimientoMouseDragged
 
+    private void Panel_movimientoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel_movimientoMousePressed
+
+    }//GEN-LAST:event_Panel_movimientoMousePressed
+
+    private void RutaMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RutaMouseDragged
+
+    }//GEN-LAST:event_RutaMouseDragged
+
+    private void RutaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RutaMousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RutaMousePressed
+
+    private void Panel_headMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel_headMouseDragged
+
+    }//GEN-LAST:event_Panel_headMouseDragged
+
+    private void Panel_headMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Panel_headMousePressed
+
+    }//GEN-LAST:event_Panel_headMousePressed
     public void Paneles(Component h) {
-
-        h.setLocation(0, 0);
-
-        Contenedor.removeAll();
-        Contenedor.add(h, BorderLayout.CENTER);
-        Contenedor.revalidate();
-        Contenedor.repaint();
+        new Thread() {
+            public void run() {
+                h.setLocation(0, 0);
+                Contenedor.removeAll();
+                Contenedor.add(h, BorderLayout.CENTER);
+                Contenedor.revalidate();
+                Contenedor.repaint();
+            }
+        }.start();
     }
 
     public void ClickOpcion(JPanel h1, JPanel h2, JPanel h3, JPanel h4, JPanel h5, JPanel h6,
-            JPanel h7, int numberbool) {
-        if (numberbool == 1) {
-            h1.setBackground(new Color(21, 124, 195));
+            JPanel h7) {
+        h1.setBackground(new Color(21, 124, 195));
 
-            h2.setBackground(new Color(18, 90, 173));
-            h3.setBackground(new Color(18, 90, 173));
-            h4.setBackground(new Color(18, 90, 173));
-            h5.setBackground(new Color(18, 90, 173));
-            h6.setBackground(new Color(18, 90, 173));
-            h7.setBackground(new Color(18, 90, 173));
-        }
+        h2.setBackground(new Color(18, 90, 173));
+        h3.setBackground(new Color(18, 90, 173));
+        h4.setBackground(new Color(18, 90, 173));
+        h5.setBackground(new Color(18, 90, 173));
+        h6.setBackground(new Color(18, 90, 173));
+        h7.setBackground(new Color(18, 90, 173));
     }
 
     public void changecolor(JPanel hover, Color rand) {
@@ -705,8 +857,12 @@ public class Interfaz extends javax.swing.JFrame {
     }
 
     private void eslogan() {
+
+        int posX = 0;
+
         while (true) {
             posX--;
+            Promo.setText(EMP.getEslogan_mov());
             Promo.setLocation(posX, 44);
             Promo.setForeground(Color.white);
             if (posX < -Promo.getWidth()) {
@@ -728,11 +884,11 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel Lado_derecho;
     private javax.swing.JLabel Logo;
     private javax.swing.JLabel Max_Min;
-    private javax.swing.JPanel Menu;
+    public static javax.swing.JPanel Menu;
     private javax.swing.JPanel Min_Max;
     private javax.swing.JPanel Opcion_1;
-    private javax.swing.JPanel Opcion_2;
-    private javax.swing.JPanel Opcion_3;
+    public static javax.swing.JPanel Opcion_2;
+    public static javax.swing.JPanel Opcion_3;
     private javax.swing.JPanel Opcion_4;
     public static javax.swing.JPanel Opcion_5;
     private javax.swing.JPanel Opcion_6;
@@ -740,7 +896,7 @@ public class Interfaz extends javax.swing.JFrame {
     private javax.swing.JPanel Panel_head;
     private javax.swing.JPanel Panel_movimiento;
     private javax.swing.JPanel Panel_opciones;
-    private javax.swing.JPanel Panel_principal;
+    public static javax.swing.JPanel Panel_principal;
     private javax.swing.JLabel Princ;
     private javax.swing.JLabel Promo;
     private javax.swing.JLabel Ruta;

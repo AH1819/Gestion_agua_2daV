@@ -1,6 +1,6 @@
 package Conexion;
 
-import Entity.Logeo;
+import Modelo.Logeo;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 public class PersistenciaLogeoBD {
 
-    public void Guardar(Object logeo) {
+    public boolean Guardar(Object logeo) {
         //Escritura
         FileOutputStream fichero = null;
         try {
@@ -19,8 +19,10 @@ public class PersistenciaLogeoBD {
             objg.writeObject(logeo);
             fichero.close();
             objg.close();
+            return true;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error -->\n" + e, "Aviso", JOptionPane.INFORMATION_MESSAGE);
+            return false;
         }
     }
 

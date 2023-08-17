@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="6a24a398-beba-4a46-96d2-325f89718989">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="127"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="DataAdapter.jrdax"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="206"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="783"/>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#BFE1FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<subDataset name="dataset1" uuid="1d489e81-a264-4cc6-b75c-aa836a8d4c98"/>
+	<parameter name="Año" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select ct.folio_contrato,(cl.nombre||' '||cl.apellido_p||' '||cl.apellido_m) as nombre , ct.fecha_creacion 
+from contrato ct
+inner join cliente cl 
+on cl.folio_cte = ct.folio_cte  
+where extract(year from (fecha_creacion))  = $P{Año}
+order by ct.folio_contrato asc]]>
+	</queryString>
+	<field name="folio_contrato" class="java.lang.Integer">
+		<property name="com.jaspersoft.studio.field.name" value="folio_contrato"/>
+		<property name="com.jaspersoft.studio.field.label" value="folio_contrato"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<field name="nombre" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="nombre"/>
+		<property name="com.jaspersoft.studio.field.label" value="nombre"/>
+	</field>
+	<field name="fecha_creacion" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="fecha_creacion"/>
+		<property name="com.jaspersoft.studio.field.label" value="fecha_creacion"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="contrato"/>
+	</field>
+	<group name="Cliente Group">
+		<groupExpression><![CDATA[$F{folio_contrato}]]></groupExpression>
+		<groupHeader>
+			<band height="31">
+				<rectangle radius="0">
+					<reportElement x="0" y="11" width="555" height="20" backcolor="#FFFFFF" uuid="7ef0592a-26ce-4f2c-8ba2-83fd35c781cb"/>
+					<graphicElement>
+						<pen lineWidth="0.0"/>
+					</graphicElement>
+				</rectangle>
+				<textField>
+					<reportElement x="12" y="11" width="100" height="20" uuid="3ea12a1f-c460-4e23-83a3-3d8d36fd1cf5"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{folio_contrato}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="120" y="11" width="300" height="20" uuid="42ae62f6-ac2f-4b64-88e5-cfe5ac97f304"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="450" y="11" width="100" height="20" uuid="2169c7fc-9ce8-4ede-a478-69453fc07c75"/>
+					<textElement verticalAlignment="Middle"/>
+					<textFieldExpression><![CDATA[$F{fecha_creacion}]]></textFieldExpression>
+				</textField>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band/>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="150" y="22" width="255" height="33" uuid="7e2d4993-07a1-4e95-84e0-33e350113523"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial Black" size="14" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Reporte de contratos por Año]]></text>
+			</staticText>
+			<image>
+				<reportElement x="0" y="0" width="150" height="79" uuid="333dd07c-374f-4a38-81d9-d4410311c444"/>
+				<imageExpression><![CDATA["D:\\Documentos\\Proyects\\Gestion\\src\\Imagenes\\logogspa.png"]]></imageExpression>
+			</image>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="430" y="35" width="100" height="20" uuid="7c08fd92-4db1-4c55-8598-5a235cb41a71"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="15" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="34" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement x="0" y="0" width="555" height="34" backcolor="#3399FF" uuid="d8ce7006-00f3-4c0e-8d5a-8c125942d123"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="12" y="0" width="100" height="34" uuid="e94042ac-3957-4e51-8b24-07473e682fc3"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Folio de contrato:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="0" width="300" height="34" uuid="32f25884-faf0-43d2-81ad-d97209aff0d9"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<text><![CDATA[Nombre del cliente:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="450" y="0" width="100" height="34" uuid="663674a7-e4b0-4531-b31b-db7db587b3b8"/>
+				<textElement verticalAlignment="Middle"/>
+				<text><![CDATA[Fecha de creacion:]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<columnFooter>
+		<band height="23" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="195" y="25" width="80" height="20" uuid="26d12227-a65c-4c45-bdcb-394b7428d890"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="275" y="25" width="40" height="20" uuid="2fd7df05-a8ea-45f7-bca8-e54c6f88026a"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="37" y="0" width="43" height="54" uuid="cdabf1e5-3d70-400d-b00c-4934364ef3af"/>
+				<imageExpression><![CDATA["D:\\Documentos\\Proyects\\Gestion\\src\\Imagenes\\icons8-water-100.png"]]></imageExpression>
+			</image>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

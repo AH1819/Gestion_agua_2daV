@@ -1,18 +1,20 @@
 package Vista;
 
-import Dao.ClienteDaoR;
-import Entity.Cliente;
-import Entity.Contrato_generado;
-import Entity.ErrorsAndSuccessesBD;
+import Controlador.Cliente_Controller;
+import Modelo.Cliente;
+import Modelo.Contrato_generado;
+import Modelo.Datos_Existentes;
+import Modelo.ErrorsAndSuccessesBD;
 import static Vista.Interfaz.Contenedor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /**
@@ -32,9 +34,13 @@ public class Cliente_data extends javax.swing.JPanel {
     String opcion_cliente;
     int folio_cte;
     ErrorsAndSuccessesBD eas = new ErrorsAndSuccessesBD();
+    Datos_Existentes DE = new Datos_Existentes();
+    Cliente_Controller CC;
+    Cliente CL;
 
     public Cliente_data(String opcion, Component ubicacion, int folio) {
         initComponents();
+        CC = new Cliente_Controller();
         MaxFecha();
         this.opcion_cliente = opcion;
         Insertando.setVisible(false);
@@ -47,9 +53,10 @@ public class Cliente_data extends javax.swing.JPanel {
                 Mensaje[1] = "Insercion";
                 break;
             case "Modificar":
+                System.out.println("modificar");
                 Mensaje = new String[2];
-                Mensaje[0] = "Desea descartar la creacion del usuario?";
-                Mensaje[1] = "Insercion";
+                Mensaje[0] = "Desea descartar la modificacion del usuario?";
+                Mensaje[1] = "Modificacion";
                 this.folio_cte = folio;
                 Next_or_save.setText("Guardar");
                 HiloCliente.start();
@@ -1182,6 +1189,7 @@ public class Cliente_data extends javax.swing.JPanel {
                 }
             }
         }
+        Insertando.setVisible(false);
     }//GEN-LAST:event_Next_or_saveActionPerformed
 
     private void CurpKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CurpKeyPressed
@@ -1239,7 +1247,12 @@ public class Cliente_data extends javax.swing.JPanel {
     private void CelularKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_CelularKeyReleased
         if (Celular.getText().trim().length() == 10) {
             celular_status = true;
-            Celular.setBorder(BorderFactory.createLineBorder(Color.BLACK, 0));
+            if (ValidarCelular(Celular.getText())) {
+                celular_status = false;
+                Celular.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
+            } else {
+                Celular.setBorder(BorderFactory.createLineBorder(Color.BLACK, 0));
+            }
         } else {
             Celular.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
         }
@@ -1273,41 +1286,56 @@ public class Cliente_data extends javax.swing.JPanel {
         }
     };
 
+    private boolean ValidarCelular(String celular) {
+        boolean status = false;
+        for (int i = 0; i < DE.getClientes_Guardados().size(); i++) {
+            if (DE.getClientes_Guardados().get(i).getCelular().equals(celular)) {
+                status = true;
+                JOptionPane.showMessageDialog(null, "Celular ya registrado", "Aviso", JOptionPane.ERROR_MESSAGE);
+                break;
+            }
+        }
+        return status;
+    }
+
     private void GetCliente(int folio) {
-        ClienteDaoR CDR = new ClienteDaoR();
-        List<Cliente> lista = CDR.SearchClientes(folio);
-        int tam = lista.size();
-        for (int i = 0; i < tam; i++) {
-            name.setText(lista.get(i).getNombre());
-            ap_p.setText(lista.get(i).getApellido_p());
-            ap_m.setText(lista.get(i).getApellido_m());
-            Fecha_nacimiento.setDate(lista.get(i).getFecha_nac());
-            Curp.setText(lista.get(i).getCurp());
-            RFC.setText(lista.get(i).getRfc());
-            Telefono.setText(lista.get(i).getTelefono());
-            Celular.setText(lista.get(i).getCelular());
-            Email.setText(lista.get(i).getEmail());
-            Municipio.setText(lista.get(i).getMunicipio());
-            Residencia.setText(lista.get(i).getResidencia());
-            Nombre_calle.setText(lista.get(i).getNombre_calle());
-            Referencia.setText(lista.get(i).getCalle_referencia());
-            Manzana.setText(String.valueOf(lista.get(i).getNumero_manzana()));
-            Lote.setText(String.valueOf(lista.get(i).getNumero_lote()));
-        }
-        if (validarCURP(Curp.getText())) {
-            curp_status = true;
-        }
-        if (validarRfc(RFC.getText())) {
-            rfc_status = true;
-        }
-        if (validarEmail(Email.getText())) {
-            email_status = true;
-        }
-        if (!Telefono.getText().isEmpty()) {
-            telefono_status = true;
-        }
-        if (!Celular.getText().isEmpty()) {
-            celular_status = true;
+        System.out.println("get cliente");
+        Cliente lista = CC.ReadOne(folio);
+
+        if (lista.getFolio_cliente() != null) {
+            name.setText(lista.getNombre());
+            ap_p.setText(lista.getApellido_p());
+            ap_m.setText(lista.getApellido_m());
+            Fecha_nacimiento.setDate(lista.getFecha_nac());
+            Curp.setText(lista.getCurp());
+            RFC.setText(lista.getRfc());
+            Telefono.setText(lista.getTelefono());
+            Celular.setText(lista.getCelular());
+            Email.setText(lista.getEmail());
+            Municipio.setText(lista.getMunicipio());
+            Residencia.setText(lista.getResidencia());
+            Nombre_calle.setText(lista.getNombre_calle());
+            Referencia.setText(lista.getCalle_referencia());
+            Manzana.setText(String.valueOf(lista.getNumero_manzana()));
+            Lote.setText(String.valueOf(lista.getNumero_lote()));
+            if (validarCURP(Curp.getText())) {
+                curp_status = true;
+            }
+            if (validarRfc(RFC.getText())) {
+                rfc_status = true;
+            }
+            if (validarEmail(Email.getText())) {
+                email_status = true;
+            }
+            if (!Telefono.getText().isEmpty()) {
+                telefono_status = true;
+            }
+            if (!Celular.getText().isEmpty()) {
+                celular_status = true;
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontro registro del Cliente", "Cliente", JOptionPane.ERROR_MESSAGE);
+            Paneles(Ubicacion);
         }
     }
 
@@ -1334,6 +1362,7 @@ public class Cliente_data extends javax.swing.JPanel {
     }
 
     private boolean validarCURP(String curp) {
+        boolean status = false;
         String regex
                 = "[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}"
                 + "(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])"
@@ -1344,17 +1373,50 @@ public class Cliente_data extends javax.swing.JPanel {
         curp = curp.toUpperCase().trim();
         Pattern patron = Pattern.compile(regex);
         if (!patron.matcher(curp).matches()) {
-            return false;
+            Icon icono = new ImageIcon(getClass().getResource("/Recursos/curP_struct.png"));
+            JOptionPane.showMessageDialog(this, "", "Error de sintaxis", JOptionPane.ERROR_MESSAGE, icono);
+            status = false;
         } else {
-            Curpo = curp;
-            return true;
+            for (int i = 0; i < DE.getClientes_Guardados().size(); i++) {
+                if (DE.getClientes_Guardados().get(i).getCurp().equals(curp) && !Next_or_save.getText().equals("Guardar")) {
+                    status = false;
+                    JOptionPane.showMessageDialog(null, "CURP ya registrada", "Aviso", JOptionPane.ERROR_MESSAGE);
+                    break;
+                } else {
+                    Curpo = curp;
+                    status = true;
+                }
+            }
         }
+        return status;
     }
 
     public boolean validarRfc(String rfc) {
+        boolean status = false;
         rfc = rfc.toUpperCase().trim();
         rfco = rfc;
-        return rfc.toUpperCase().matches("[A-Z]{4}[0-9]{6}[A-Z0-9]{3}");
+        status = rfc.toUpperCase().matches("[A-Z]{4}[0-9]{6}[A-Z0-9]{3}");
+
+        if (status) {
+            for (int i = 0; i < DE.getClientes_Guardados().size(); i++) {
+                System.out.println(rfc);
+                System.out.println("TAMAÑO " + DE.getClientes_Guardados().size() + " I" + i);
+                System.out.println(DE.getClientes_Guardados().get(i).getRfc());
+                if (!(DE.getClientes_Guardados().get(i).getRfc() == null)) {
+
+                    if (DE.getClientes_Guardados().get(i).getRfc().equals(rfc)) {
+                        status = false;
+                        JOptionPane.showMessageDialog(null, "RFC ya registrada", "Aviso", JOptionPane.ERROR_MESSAGE);
+                        //  i=0;
+                        break;
+                    } else {
+                        status = true;
+                    }
+                }
+            }
+        }
+
+        return status;
     }
 
     private boolean validarEmail(String email) {
@@ -1375,26 +1437,38 @@ public class Cliente_data extends javax.swing.JPanel {
     }
 
     private void insertarCliente() {
-        ClienteDaoR cs = new ClienteDaoR();
         Date date = Fecha_nacimiento.getDate();
         long d = date.getTime();
         java.sql.Date fechap = new java.sql.Date(d);
-        Cliente CL = new Cliente(name.getText(), ap_p.getText(), ap_m.getText(),
-                fechap, telefono_opcional, Celular.getText(), emailo, Curpo, rfco, Municipio.getText(),
-                Residencia.getText(), Nombre_calle.getText(), Referencia.getText(),
-                Integer.parseInt(Manzana.getText()), Integer.parseInt(Lote.getText()));
 
-        eas.setResultinsert(cs.InsertarCliente(CL));
+        CL = new Cliente();
+        CL.setNombre(name.getText());
+        CL.setApellido_p(ap_p.getText());
+        CL.setApellido_m(ap_m.getText());
+        CL.setFecha_nac(fechap);
+        CL.setTelefono(telefono_opcional);
+        CL.setCelular(Celular.getText());
+        CL.setEmail(emailo);
+        CL.setCurp(Curpo);
+        CL.setRfc(rfco);
+        CL.setMunicipio(Municipio.getText());
+        CL.setResidencia(Residencia.getText());
+        CL.setNombre_calle(Nombre_calle.getText());
+        CL.setCalle_referencia(Referencia.getText());
+        CL.setNumero_manzana(Integer.parseInt(Manzana.getText()));
+        CL.setNumero_lote(Integer.parseInt(Lote.getText()));
+
+        CC.setCl(CL);
+
+        eas.setResultinsert(CC.Create());
 
         if (eas.getResultinsert() == -1) {
             JOptionPane.showMessageDialog(this, "Algo salio mal al insertar", "Aviso", JOptionPane.INFORMATION_MESSAGE);
         } else {
+            CL.setFolio_cliente(eas.getResultinsert());
             Contrato_generado cg = new Contrato_generado();
             cg.setNombre_cliente(name.getText() + " " + ap_p.getText() + "" + ap_m.getText());
-            Cliente c = new Cliente(eas.getResultinsert(), Municipio.getText(),
-                    Residencia.getText(), Nombre_calle.getText(), Referencia.getText(),
-                    Integer.parseInt(Manzana.getText()), Integer.parseInt(Lote.getText()));
-            Contrato_data CD = new Contrato_data(c, "Nuevo Cliente Contrato", Ubicacion, 0);
+            Contrato_data CD = new Contrato_data(Ubicacion, CL, eas.getResultinsert());
             Insertando.setVisible(false);
             Paneles(CD);
         }
@@ -1404,13 +1478,31 @@ public class Cliente_data extends javax.swing.JPanel {
         Date date = Fecha_nacimiento.getDate();
         long d = date.getTime();
         java.sql.Date fechap = new java.sql.Date(d);
-        ClienteDaoR CDR = new ClienteDaoR();
-        Cliente cl = new Cliente(folio_cte, name.getText(), ap_p.getText(), ap_m.getText(), fechap,
+
+        CL = new Cliente();
+        CL.setFolio_cliente(folio_cte);
+        CL.setNombre(name.getText());
+        CL.setApellido_p(ap_p.getText());
+        CL.setApellido_m(ap_m.getText());
+        CL.setFecha_nac(fechap);
+        CL.setTelefono(Telefono.getText());
+        CL.setCelular(Celular.getText());
+        CL.setEmail(Email.getText());
+        CL.setCurp(Curpo);
+        CL.setRfc(rfco);
+        CL.setMunicipio(Municipio.getText());
+        CL.setResidencia(Residencia.getText());
+        CL.setNombre_calle(Nombre_calle.getText());
+        CL.setCalle_referencia(Referencia.getText());
+        CL.setNumero_manzana(Integer.parseInt(Manzana.getText()));
+        CL.setNumero_lote(Integer.parseInt(Lote.getText()));
+        /*(folio_cte, name.getText(), ap_p.getText(), ap_m.getText(), fechap,
                 Telefono.getText(), Celular.getText(), Email.getText(), Curpo, rfco,
                 Municipio.getText(), Residencia.getText(), Nombre_calle.getText(), Referencia.getText(),
-                Integer.parseInt(Manzana.getText()), Integer.parseInt(Lote.getText()));
-        eas.setResultinsert(CDR.ActualizarCliente(cl));
-        if (eas.getResultact() == -1) {
+                Integer.parseInt(Manzana.getText()), Integer.parseInt(Lote.getText()));*/
+        CC.setCl(CL);
+        eas.setResultact(CC.Update());
+        if (!eas.getResultact()) {
             JOptionPane.showMessageDialog(this, "Algo salio mal al actualizar", "Aviso", JOptionPane.ERROR_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(this, "Se actualizo con exito", "!Exito¡", JOptionPane.INFORMATION_MESSAGE);

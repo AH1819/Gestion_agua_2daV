@@ -1,15 +1,15 @@
 package Vista;
 
-import Dao.ClienteDaoR;
-import Entity.Cliente;
-import Entity.Datos_Existentes;
-import Entity.MiRenderer;
+import Controlador.Cliente_Controller;
+import Modelo.Cliente;
+import Modelo.Datos_Existentes;
+import Modelo.MiRenderer;
+import Modelo.CargarDatos;
 import static Vista.Interfaz.Contenedor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.util.Enumeration;
-import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -24,18 +24,21 @@ import javax.swing.table.TableColumn;
 public class Cliente_Vista extends javax.swing.JPanel {
 
     int id_busqueda = 0;
-    Datos_Existentes CE = new Datos_Existentes();
+    Datos_Existentes CE;
+    DefaultTableModel modelo;
+    Cliente_Controller CC;
+    CargarDatos CD;
 
     public Cliente_Vista() {
         initComponents();
+        CE = new Datos_Existentes();
+        CD = new CargarDatos();
+        CC = new Cliente_Controller();
+        modelo = (DefaultTableModel) Mostrar.getModel();
         esperabusqueda.setVisible(false);
         esperaNuevoC.setVisible(false);
         espera.setVisible(false);
-        new Thread() {
-            public void run() {
-                Mostrar();
-            }
-        }.start();
+        HiloCliente.start();
     }
 
     @SuppressWarnings("unchecked")
@@ -62,6 +65,14 @@ public class Cliente_Vista extends javax.swing.JPanel {
         usrnm.setForeground(new java.awt.Color(102, 102, 102));
         usrnm.setText("Ingrese el folio de cliente a buscar");
         usrnm.setBorder(null);
+        usrnm.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                usrnmFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                usrnmFocusLost(evt);
+            }
+        });
         usrnm.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 usrnmMousePressed(evt);
@@ -79,7 +90,13 @@ public class Cliente_Vista extends javax.swing.JPanel {
         esperabusqueda.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         esperabusqueda.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/cargando.gif"))); // NOI18N
 
-        Mostrar.setFont(new java.awt.Font("Segoe UI", 0, 11)); // NOI18N
+        jScrollPane2.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                jScrollPane2FocusGained(evt);
+            }
+        });
+
+        Mostrar.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         Mostrar.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -103,7 +120,16 @@ public class Cliente_Vista extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        Mostrar.setRowHeight(22);
         Mostrar.getTableHeader().setReorderingAllowed(false);
+        Mostrar.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                MostrarFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                MostrarFocusLost(evt);
+            }
+        });
         Mostrar.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 MostrarMousePressed(evt);
@@ -114,13 +140,13 @@ public class Cliente_Vista extends javax.swing.JPanel {
             Mostrar.getColumnModel().getColumn(0).setResizable(false);
             Mostrar.getColumnModel().getColumn(0).setPreferredWidth(10);
             Mostrar.getColumnModel().getColumn(1).setResizable(false);
-            Mostrar.getColumnModel().getColumn(1).setPreferredWidth(200);
+            Mostrar.getColumnModel().getColumn(1).setPreferredWidth(150);
             Mostrar.getColumnModel().getColumn(2).setResizable(false);
             Mostrar.getColumnModel().getColumn(2).setPreferredWidth(60);
             Mostrar.getColumnModel().getColumn(3).setResizable(false);
             Mostrar.getColumnModel().getColumn(3).setPreferredWidth(10);
             Mostrar.getColumnModel().getColumn(4).setResizable(false);
-            Mostrar.getColumnModel().getColumn(4).setPreferredWidth(20);
+            Mostrar.getColumnModel().getColumn(4).setPreferredWidth(100);
             Mostrar.getColumnModel().getColumn(5).setResizable(false);
             Mostrar.getColumnModel().getColumn(5).setPreferredWidth(10);
             Mostrar.getColumnModel().getColumn(6).setResizable(false);
@@ -194,6 +220,11 @@ public class Cliente_Vista extends javax.swing.JPanel {
                 TipoItemStateChanged(evt);
             }
         });
+        Tipo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                TipoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -204,7 +235,7 @@ public class Cliente_Vista extends javax.swing.JPanel {
                 .addComponent(NuevoContrato, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
                 .addComponent(esperaNuevoC, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 262, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 342, Short.MAX_VALUE)
                 .addComponent(Nuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(10, 10, 10)
                 .addComponent(Edit, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -222,7 +253,7 @@ public class Cliente_Vista extends javax.swing.JPanel {
                 .addComponent(Tipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(esperabusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane2)
@@ -233,20 +264,16 @@ public class Cliente_Vista extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(Title)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Title)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(30, 30, 30)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(usrnm, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(Tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(27, 27, 27))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(esperabusqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
-                .addGap(21, 21, 21)
+                        .addGap(30, 30, 30)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(usrnm, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Tipo, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(esperabusqueda, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(esperaNuevoC, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(espera, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -262,9 +289,7 @@ public class Cliente_Vista extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void usrnmMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usrnmMousePressed
-        if (usrnm.getText().equals("Ingrese el folio de cliente a buscar")) {
-            usrnm.setText("");
-        }
+
     }//GEN-LAST:event_usrnmMousePressed
 
     private void usrnmMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_usrnmMouseReleased
@@ -272,40 +297,41 @@ public class Cliente_Vista extends javax.swing.JPanel {
     }//GEN-LAST:event_usrnmMouseReleased
 
     private void MostrarMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_MostrarMousePressed
-        if (usrnm.getText().equals("") || usrnm.getText() == null || usrnm.getText().equals(" ")) {
-            usrnm.setText("Ingrese el folio de cliente a buscar");
-        }
-
-        if (evt.getClickCount() == 2) {
-            try {
-                id_busqueda = Integer.parseInt(Mostrar.getValueAt(Mostrar.getSelectedRow(), 0).toString());
-                ContratosC ct = new ContratosC(id_busqueda, "Contratos del cliente", "Cliente_Vista", this);
-                ct.setVisible(true);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Hubo un error al consultar: " + e, "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        if (Mostrar.getSelectedRow() != -1 && Mostrar.getSelectedRow() < Mostrar.getRowCount()) {
+            switch (evt.getClickCount()) {
+                case 1:
+                    try {
+                        id_busqueda = Integer.parseInt(Mostrar.getValueAt(Mostrar.getSelectedRow(), 0).toString());
+                        Edit.setEnabled(true);
+                        NuevoContrato.setEnabled(true);
+                        Delete.setEnabled(true);
+                        if (Mostrar.getValueAt(Mostrar.getSelectedRow(), 6).toString().equals("inactivo")) {
+                            Delete.setText("Dar de alta");
+                        }
+                        if (Mostrar.getValueAt(Mostrar.getSelectedRow(), 6).toString().equals("activo")) {
+                            Delete.setText("Dar de baja");
+                        }
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(this, "Error", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    break;
+                case 2:
+                    try {
+                        id_busqueda = Integer.parseInt(Mostrar.getValueAt(Mostrar.getSelectedRow(), 0).toString());
+                        ContratosC ct = new ContratosC(id_busqueda, "Contratos del cliente", "Cliente_Vista", this);
+                        ct.setVisible(true);
+                    } catch (NumberFormatException e) {
+                        JOptionPane.showMessageDialog(null, "Hubo un error al consultar: " + e, "Aviso", JOptionPane.INFORMATION_MESSAGE);
+                    }
+                    break;
             }
-        }
-        if (evt.getClickCount() == 1) {
-            try {
-                id_busqueda = Integer.parseInt(Mostrar.getValueAt(Mostrar.getSelectedRow(), 0).toString());
-                Edit.setEnabled(true);
-                NuevoContrato.setEnabled(true);
-                Delete.setEnabled(true);
-                if (Mostrar.getValueAt(Mostrar.getSelectedRow(), 6).toString().equals("inactivo")) {
-                    Delete.setText("Dar de alta");
-                }
-                if (Mostrar.getValueAt(Mostrar.getSelectedRow(), 6).toString().equals("activo")) {
-                    Delete.setText("Dar de baja");
-                }
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Error", "Aviso", JOptionPane.INFORMATION_MESSAGE);
-            }
+        } else {
+            System.out.println("fuera");
         }
     }//GEN-LAST:event_MostrarMousePressed
 
     private void NuevoContratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NuevoContratoActionPerformed
-        Cliente cl = new Cliente();
-        Contrato_data cd = new Contrato_data(cl, "Nuevo Contrato", this, id_busqueda);
+        Contrato_data cd = new Contrato_data(this, "Nuevo Contrato", id_busqueda);
         Paneles(cd);
     }//GEN-LAST:event_NuevoContratoActionPerformed
 
@@ -318,18 +344,21 @@ public class Cliente_Vista extends javax.swing.JPanel {
     }//GEN-LAST:event_NuevoMouseExited
 
     private void NuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NuevoActionPerformed
-        Cliente_data CD = new Cliente_data("Nuevo", this, 0);
-        Paneles(CD);
+        Cliente_data CDP = new Cliente_data("Nuevo", this, 0);
+        Paneles(CDP);
     }//GEN-LAST:event_NuevoActionPerformed
 
     private void EditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditActionPerformed
-        Cliente_data CD = new Cliente_data("Modificar", this, id_busqueda);
-        Paneles(CD);
+        System.out.println("presiona");
+        Cliente_data CDP = new Cliente_data("Modificar", this, id_busqueda);
+        System.out.println("presiona");
+        Paneles(CDP);
     }//GEN-LAST:event_EditActionPerformed
 
     private void DeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteActionPerformed
         String[] arreglo = {"Si", "No"};
         switch (Delete.getText()) {
+
             case "Dar de baja":
                 int opcionp = JOptionPane.showOptionDialog(null, "¿Esta seguro que quiere dar de baja el contrato?", "Dar de baja", 0, JOptionPane.QUESTION_MESSAGE, null, arreglo, "No");
                 if (arreglo[opcionp].equals("Si")) {
@@ -337,7 +366,7 @@ public class Cliente_Vista extends javax.swing.JPanel {
                         @Override
                         public void run() {
                             Baja();
-                            Mostrar();
+                            DataTabla();
                         }
                     }.start();
                 }
@@ -349,7 +378,7 @@ public class Cliente_Vista extends javax.swing.JPanel {
                         @Override
                         public void run() {
                             Alta();
-                            Mostrar();
+                            DataTabla();
                         }
                     }.start();
                 }
@@ -360,101 +389,126 @@ public class Cliente_Vista extends javax.swing.JPanel {
     private void usrnmKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usrnmKeyReleased
         if (!usrnm.getText().isEmpty()) {
             esperabusqueda.setVisible(true);
-            String text = usrnm.getText();
             try {
-                int number = Integer.parseInt(text);
+                int number = Integer.parseInt(usrnm.getText());
                 usrnm.setBorder(BorderFactory.createLineBorder(Color.BLACK, 0));
-                FiltroTabla(0, usrnm.getText());
+                FiltroTabla(usrnm.getText().trim(), 2);
             } catch (NumberFormatException e1) {
                 try {
-                    double number = Double.parseDouble(text);
+                    double number = Double.parseDouble(usrnm.getText());
                     usrnm.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
-                    FiltroTabla(6, "all");
+                    DataTabla();
                 } catch (NumberFormatException e2) {
-                    usrnm.setBorder(BorderFactory.createLineBorder(Color.BLACK, 0));
-                    FiltroTabla(1, usrnm.getText());
+                    if (usrnm.getText().trim().length() > 2) {
+                        usrnm.setBorder(BorderFactory.createLineBorder(Color.BLACK, 0));
+                        FiltroTabla(usrnm.getText().toLowerCase(), 1);
+                    } else {
+                        DataTabla();
+                    }
                 }
             }
         } else {
-            FiltroTabla(6, "all");
+            DataTabla();
         }
     }//GEN-LAST:event_usrnmKeyReleased
 
     private void TipoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_TipoItemStateChanged
+
+
+    }//GEN-LAST:event_TipoItemStateChanged
+
+    private void TipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TipoActionPerformed
+        esperabusqueda.setVisible(true);
+        usrnm.setText("Ingrese el folio de cliente a buscar");
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                esperabusqueda.setVisible(true);
-                usrnm.setText("Ingrese el folio de cliente a buscar");
-                Mostrar();
+                new Thread() {
+                    public void run() {
+                        DataTabla();
+                    }
+                }.start();
             }
         });
-    }//GEN-LAST:event_TipoItemStateChanged
+    }//GEN-LAST:event_TipoActionPerformed
+
+    private void jScrollPane2FocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jScrollPane2FocusGained
+
+    }//GEN-LAST:event_jScrollPane2FocusGained
+
+    private void MostrarFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_MostrarFocusGained
+
+    }//GEN-LAST:event_MostrarFocusGained
+
+    private void MostrarFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_MostrarFocusLost
+
+    }//GEN-LAST:event_MostrarFocusLost
+
+    private void usrnmFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usrnmFocusGained
+        if (usrnm.getText().equals("Ingrese el folio de cliente a buscar")) {
+            usrnm.setText("");
+        }
+    }//GEN-LAST:event_usrnmFocusGained
+
+    private void usrnmFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usrnmFocusLost
+        if (usrnm.getText().trim().equals("") || usrnm.getText() == null) {
+            usrnm.setText("Ingrese el folio de cliente a buscar");
+        }
+    }//GEN-LAST:event_usrnmFocusLost
+
     public void Paneles(Component h) {
         h.setLocation(0, 0);
-
         Contenedor.removeAll();
         Contenedor.add(h, BorderLayout.CENTER);
         Contenedor.revalidate();
         Contenedor.repaint();
     }
 
-    private void Mostrar() {
-        new Thread() {
-            public void run() {
-                int opcion = Tipo.getSelectedIndex();
-                ClienteDaoR cs = new ClienteDaoR();
-                List<Cliente> lista = cs.MostrarClientes(opcion);
-                int tam = lista.size();
-                String list[][] = new String[tam][7];
-                for (int i = 0; i < tam; i++) {
-                    list[i][0] = lista.get(i).getFolio_cliente().toString();
-                    list[i][1] = lista.get(i).getNombre() + " " + lista.get(i).getApellido_p() + " " + lista.get(i).getApellido_m();
-                    list[i][2] = lista.get(i).getFecha_nac().toString();
-                    list[i][3] = lista.get(i).getCelular();
-                    list[i][4] = lista.get(i).getEmail();
-                    list[i][5] = lista.get(i).getRfc();
-                    list[i][6] = lista.get(i).getStatus();
-                }
-                CE.setClientes_Guardados(list);
-                String head[] = {"Folio", "Nombre", "Fecha de nacimiento", "Celular", "Correo", "RFC", "Status"};
-                Integer TamañoColumna[] = {10, 200, 60, 10, 20, 10, 10};
-                Jtable(Mostrar, list, head, 7, TamañoColumna);
+    Thread HiloCliente = new Thread() {
+        public void run() {
+            DataTabla();
+        }
+    };
+
+    private void DataTabla() {
+        modelo.setRowCount(0);
+        if (CD.CargarClientes(Tipo.getSelectedIndex())) {
+            for (Cliente cliente : CE.getClientes_Guardados()) {
+                Object[] fila = {cliente.getFolio_cliente(), cliente.getNombre(),
+                    cliente.getFecha_nac(), cliente.getCelular(), cliente.getEmail(),
+                    cliente.getRfc(), cliente.getStatus()};
+                modelo.addRow(fila);
             }
-        }.start();
+            Mostrar.setModel(modelo);
+            setCellRender(Mostrar);
+        } else {
+            JOptionPane.showMessageDialog(this, "No hay registros para mostrar", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+        }
+        esperabusqueda.setVisible(false);
     }
 
     private void Baja() {
-        ClienteDaoR cs = new ClienteDaoR();
-        cs.DarDeBajaCliente(id_busqueda);
+        if (CC.Delete(id_busqueda)) {
+            JOptionPane.showMessageDialog(this,
+                    "Baja exitosa",
+                    "Exito", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Error al dar de baja",
+                    "Error", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void Alta() {
-        ClienteDaoR cs = new ClienteDaoR();
-        cs.DarDeAltaCliente(id_busqueda);
-    }
-
-    private void Jtable(JTable x, String list[][], String Head[], int columnas, Integer tamañoC[]) {
-        if (list.length > 0) {
-            x.setModel(new javax.swing.table.DefaultTableModel(list, Head) {
-                boolean[] canEdit = new boolean[]{
-                    false, false, false, false, false, false, false, false
-                };
-
-                @Override
-                public boolean isCellEditable(int rowIndex, int columnIndex) {
-                    return canEdit[columnIndex];
-                }
-            });
-            for (int i = 0; i < columnas; i++) {
-                x.getColumnModel().getColumn(i).setPreferredWidth(tamañoC[i]);
-            }
-
-            setCellRender(x);
+        if (CC.Alta(id_busqueda)) {
+            JOptionPane.showMessageDialog(this,
+                    "Alta exitosa",
+                    "Exito", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            x.setModel(new javax.swing.table.DefaultTableModel(list, Head));
+            JOptionPane.showMessageDialog(this,
+                    "Error al dar de Alta",
+                    "Error", JOptionPane.WARNING_MESSAGE);
         }
-        esperabusqueda.setVisible(false);
     }
 
     public void setCellRender(JTable table) {
@@ -464,41 +518,52 @@ public class Cliente_Vista extends javax.swing.JPanel {
             TableColumn tc = en.nextElement();
             tc.setCellRenderer(new MiRenderer());
         }
-
+        table.repaint();
     }
 
-    private void FiltroTabla(int column, String search) {
-        new Thread() {
-            public void run() {
-                DefaultTableModel modelo = (DefaultTableModel) Mostrar.getModel();
-                modelo.setRowCount(0);
-                boolean status = false;
-                for (String[] Clientes_Guardado : CE.getClientes_Guardados()) {
-                    for (String Clientes_Guardado1 : Clientes_Guardado) {
+    private void FiltroTabla(String busqueda, int opcion) {
+        boolean Status = false;
 
-                        if (Clientes_Guardado[column].toLowerCase().contains(search.toLowerCase())) {
-                            modelo.addRow(Clientes_Guardado);
-                            status = true;
-                            break;
-                        }
+        modelo.setRowCount(0);
 
+        switch (opcion) {
+            case 1:
+                for (Cliente cliente : CE.getClientes_Guardados()) {
+                    if (cliente.getNombre().toLowerCase().contains(busqueda)) {
+                        Object[] arr = {cliente.getFolio_cliente(), cliente.getNombre(),
+                            cliente.getFecha_nac(), cliente.getCelular(), cliente.getEmail(),
+                            cliente.getRfc(), cliente.getStatus()};
+                        modelo.addRow(arr);
+                        Status = true;
                     }
                 }
-                if (!status) {
-                    for (String[] Clientes_Guardado : CE.getClientes_Guardados()) {
-                        modelo.addRow(Clientes_Guardado);
+                break;
+            case 2:
+                for (Cliente cliente : CE.getClientes_Guardados()) {
+                    if (cliente.getFolio_cliente().toString().contains(busqueda)) {
+                        Object[] arr = {cliente.getFolio_cliente(), cliente.getNombre(),
+                            cliente.getFecha_nac(), cliente.getCelular(), cliente.getEmail(),
+                            cliente.getRfc(), cliente.getStatus()};
+                        modelo.addRow(arr);
+                        Status = true;
                     }
                 }
-                Mostrar.setModel(modelo);
-                esperabusqueda.setVisible(false);
-            }
-        }.start();
+                break;
+        }
+
+        if (!Status) {
+            DataTabla();
+            return;
+        }
+        Mostrar.setModel(modelo);
+        setCellRender(Mostrar);
+        esperabusqueda.setVisible(false);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Delete;
     private javax.swing.JButton Edit;
-    private javax.swing.JTable Mostrar;
+    public javax.swing.JTable Mostrar;
     private javax.swing.JButton Nuevo;
     private javax.swing.JButton NuevoContrato;
     private javax.swing.JComboBox<String> Tipo;

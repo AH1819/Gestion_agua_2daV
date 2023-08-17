@@ -1,25 +1,24 @@
 package Vista;
 
-import Dao.Cat_descuentoDao;
-import Dao.CatalogosDao;
-import Dao.ClienteDaoR;
-import Dao.Det_abonoDao;
-import Dao.LecturapagoDao;
+import Controlador.Catalogo_Controller;
+import Controlador.Cliente_Controller;
+import Controlador.DetAbono_Controller;
+import Controlador.Lecturas_Controller;
 import Dao.TicketDao;
-import Entity.Cat_descuento;
-import Entity.Cat_pago;
-import Entity.Cliente;
-import Entity.DetAbono;
-import Entity.LecturaPago;
-import Entity.MiRenderer;
-import Entity.Ticket;
-import Entity.ticket_generado;
+import Modelo.Cat_descuento;
+import Modelo.Cat_pago;
+import Modelo.Cliente;
+import Modelo.DetAbono;
+import Modelo.LecturaPago;
+import Modelo.MiRenderer;
+import Modelo.Ticket;
+import Modelo.ticket_generado;
 import static Vista.Interfaz.Contenedor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -32,19 +31,28 @@ import javax.swing.table.TableColumn;
  * @author Hitler
  */
 public class Servicio_Responsive extends javax.swing.JPanel {
-    
+
     int id_descuento = 0, id_TipoPago = 0, id_abono = 0, Lectura_pago;
     String Fecha_pago;
     String mes;
     String consumo;
     String folio_ventanilla = "No aplica";
     String[][] Adeudos;
-    String[][] Tipo_pago;
-    String[][] Descuentos;
+    ArrayList<Cat_pago> Tipo_pago;
+    ArrayList<Cat_descuento> Descuentos;
     DefaultTableModel temp;
-    
+    Catalogo_Controller CC;
+    Cliente_Controller CTC;
+    DetAbono_Controller DAC;
+    Lecturas_Controller LP;
+
     public Servicio_Responsive() {
         initComponents();
+        CC = new Catalogo_Controller();
+        CTC = new Cliente_Controller();
+        DAC = new DetAbono_Controller();
+        temp = (DefaultTableModel) Datos_Cliente.getModel();
+        LP = new Lecturas_Controller();
         new Thread() {
             public void run() {
                 Descuentos_pagos();
@@ -57,7 +65,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
         Cargando.setVisible(false);
         Generando.setVisible(false);
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -89,6 +97,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
         Generando = new javax.swing.JLabel();
         Pagar = new javax.swing.JButton();
         Informacion_deudas = new javax.swing.JTextArea();
+        Abonos = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -258,6 +267,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
 
         D_pago.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una opción" }));
         D_pago.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        D_pago.setEnabled(false);
         D_pago.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 D_pagoActionPerformed(evt);
@@ -272,6 +282,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
 
         T_pago.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione una opción" }));
         T_pago.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        T_pago.setEnabled(false);
         T_pago.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 T_pagoItemStateChanged(evt);
@@ -318,6 +329,17 @@ public class Servicio_Responsive extends javax.swing.JPanel {
         Informacion_deudas.setWrapStyleWord(true);
         Informacion_deudas.setAutoscrolls(false);
 
+        Abonos.setBackground(new java.awt.Color(18, 90, 173));
+        Abonos.setFont(new java.awt.Font("Roboto Light", 1, 14)); // NOI18N
+        Abonos.setForeground(new java.awt.Color(255, 255, 255));
+        Abonos.setText("Ver abonos");
+        Abonos.setEnabled(false);
+        Abonos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AbonosActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -328,58 +350,58 @@ public class Servicio_Responsive extends javax.swing.JPanel {
                         .addContainerGap()
                         .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(34, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Importe, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Pago)
+                            .addComponent(Informacion_deudas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(38, 38, 38)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(Dato, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(60, 60, 60)
-                                .addComponent(Busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(60, 60, 60)
-                                .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, 0)
-                                .addComponent(Cargando, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addContainerGap(9, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(Importe, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
-                                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(Pago)
-                                    .addComponent(Informacion_deudas, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addGroup(layout.createSequentialGroup()
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                    .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                                    .addComponent(recibido, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                .addGap(18, 18, 18)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel3)
-                                                    .addComponent(Cambio)))
-                                            .addComponent(Mes_adeudo, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(Mes_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(recibido, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(D_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(190, 190, 190)
-                                        .addComponent(Pagar)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(Generando, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)))
+                                            .addComponent(jLabel3)
+                                            .addComponent(Cambio)))
+                                    .addComponent(Mes_adeudo, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(Mes_pagar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel15)
-                                    .addComponent(T_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(Referencia, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(referencia, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
+                                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(D_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(190, 190, 190)
+                                .addComponent(Pagar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Generando, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 104, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel15)
+                            .addComponent(T_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Referencia, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(referencia, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 107, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(Dato, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(60, 60, 60)
+                        .addComponent(Busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(60, 60, 60)
+                        .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(Cargando, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Abonos, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -387,32 +409,40 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(3, 3, 3)
-                                .addComponent(Dato, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(Busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(10, 10, 10)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(3, 3, 3)
+                                        .addComponent(Dato, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(20, 20, 20)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(Busqueda, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(Buscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(0, 11, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(Cargando, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGap(18, 18, 18))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addComponent(Abonos, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 55, Short.MAX_VALUE)
-                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGap(18, 19, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel9)
                                 .addGap(3, 3, 3)
                                 .addComponent(Importe, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 9, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, 0)
                                 .addComponent(Pago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -433,11 +463,11 @@ public class Servicio_Responsive extends javax.swing.JPanel {
                                         .addComponent(jLabel16)
                                         .addGap(3, 3, 3)
                                         .addComponent(D_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))))
-                    .addComponent(T_pago, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
+                    .addComponent(T_pago, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(jLabel15)
                         .addGap(43, 43, 43)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
@@ -450,10 +480,10 @@ public class Servicio_Responsive extends javax.swing.JPanel {
                                 .addComponent(Referencia)
                                 .addGap(0, 0, 0)
                                 .addComponent(referencia, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap(64, Short.MAX_VALUE))
+                        .addContainerGap(62, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(Informacion_deudas, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
-                        .addContainerGap(27, Short.MAX_VALUE))))
+                        .addComponent(Informacion_deudas, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
+                        .addContainerGap(28, Short.MAX_VALUE))))
         );
 
         ((JLabel)D_pago.getRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
@@ -482,9 +512,9 @@ public class Servicio_Responsive extends javax.swing.JPanel {
 
     private void DatoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_DatoKeyTyped
         int key = evt.getKeyChar();
-        
+
         boolean numeros = key >= 48 && key <= 57;
-        
+
         if (!numeros) {
             evt.consume();
         }
@@ -503,11 +533,11 @@ public class Servicio_Responsive extends javax.swing.JPanel {
     }//GEN-LAST:event_BuscarFocusLost
 
     private void BuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarActionPerformed
+        Cargando.setVisible(true);
         String seleccionado = Busqueda.getSelectedItem().toString();
         new Thread() {
             public void run() {
                 switch (seleccionado) {
-                    //Folio contrato, Folio cliente, Telefono/celular
                     case "Folio contrato":
                         contrato(Dato.getText().trim());
                         break;
@@ -553,7 +583,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
 
     private void PagoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PagoKeyTyped
         int key = evt.getKeyChar();
-        
+
         boolean numeros = key >= 48 && key <= 57;
         boolean punto = key == 46;
         if (!numeros && !punto) {
@@ -572,7 +602,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
 
     private void recibidoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_recibidoKeyTyped
         int key = evt.getKeyChar();
-        
+
         boolean numeros = key >= 48 && key <= 57;
         boolean punto = key == 46;
         if (!numeros && !punto) {
@@ -588,12 +618,11 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             Pagar.setEnabled(true);
         }
         if (D_pago.getSelectedIndex() > 0) {
-            for (String[] Descuento : Descuentos) {
-                if (Descuento[1].equals(D_pago.getSelectedItem())) {
-                    id_descuento = Integer.parseInt(Descuento[0]);
-                    System.out.println(id_descuento);
+            Descuentos.forEach((desc) -> {
+                if (desc.getPorcentaje() == Double.parseDouble(D_pago.getSelectedItem().toString())) {
+                    id_descuento = desc.getId_desc();
                 }
-            }
+            });
         } else {
             id_descuento = 0;
         }
@@ -609,24 +638,22 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             referencia.setVisible(false);
             referencia.setText("No aplica");
         }
-        //validar campos a rellenar por obligacion
         if (Pago.getText().isEmpty() || recibido.getText().isEmpty() || D_pago.getSelectedIndex() < 1 || T_pago.getSelectedIndex() < 1) {
             Pagar.setEnabled(false);
         } else {
             Pagar.setEnabled(true);
         }
-        
+
         if (T_pago.getSelectedIndex() > 0) {
-            for (String[] Tipos : Tipo_pago) {
-                if (Tipos[1].equals(T_pago.getSelectedItem())) {
-                    id_TipoPago = Integer.parseInt(Tipos[0]);
-                    System.out.println(id_TipoPago);
+            Tipo_pago.forEach((tipo) -> {
+                if (tipo.getTipo_pago().equals(T_pago.getSelectedItem())) {
+                    id_TipoPago = tipo.getId_tipo_pago();
                 }
-            }
+            });
         } else {
             id_TipoPago = 0;
         }
-        
+
         if (referencia.getText().isEmpty()) {
             folio_ventanilla = "No aplica";
         } else {
@@ -635,12 +662,6 @@ public class Servicio_Responsive extends javax.swing.JPanel {
     }//GEN-LAST:event_T_pagoActionPerformed
 
     private void PagarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PagarActionPerformed
-        System.out.println("Pago a realizar: " + Pago.getText());
-        System.out.println("Recibido: " + recibido.getText());
-        System.out.println("Descuento: " + id_descuento);
-        System.out.println("Tipo pago: " + id_TipoPago);
-        System.out.println("Folio ventanilla: " + folio_ventanilla);
-        System.out.println("Lectura pago: " + Lectura_pago);
         new Thread() {
             @Override
             public void run() {
@@ -677,24 +698,23 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             folio_ventanilla = referencia.getText().trim();
         }
     }//GEN-LAST:event_referenciaKeyReleased
-    
+
+    private void AbonosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AbonosActionPerformed
+        AbonosView a = new AbonosView(Integer.parseInt(Dato.getText()), this);
+        Paneles(a);
+    }//GEN-LAST:event_AbonosActionPerformed
+
     private void Cambio_p() {
-        
-        if (!Pago.getText().isEmpty() && !Pago.getText().equals(" Cantidad a pagar") && !recibido.getText().isEmpty()) {
+
+        if (!Pago.getText().isEmpty() && !recibido.getText().isEmpty()) {
             double pagado_c = Double.parseDouble(recibido.getText().trim());
             double pago = Double.parseDouble(Pago.getText().trim());
-            double descuento = 0;
-            for (String[] Descuento : Descuentos) {
-                if (Descuento[1].equals(D_pago.getSelectedItem())) {
-                    descuento = Double.parseDouble(Descuento[1]);
-                }
-            }
+            double descuento = (!D_pago.getSelectedItem().equals("Seleccione una opción")) ? Double.parseDouble(D_pago.getSelectedItem().toString()) : 0;
+
             double descuento_pago = descuento / 100.0 * pago;
-            System.out.println(descuento);
             double vali = 0;
             for (String[] Adeudo : Adeudos) {
                 vali = Double.parseDouble(Adeudo[1]);
-                System.out.println(Adeudo[0] + "\n" + Adeudo[1]);
             }
             if (pago <= pagado_c) {
                 double cambio = (pagado_c - pago) + descuento_pago;
@@ -713,297 +733,224 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             Cambio.setText("$0.0");
         }
     }
-    
-    private void contrato(String num) {
-        ClienteDaoR cs = new ClienteDaoR();
-        List<Cliente> lista = cs.Pagocl_contrato(Integer.parseInt(num));
-        int tam = lista.size();
-        if (tam > 0) {
-            
-            String list[][] = new String[tam][4];
-            Mes(Integer.parseInt(Dato.getText()));
-            
-            for (int i = 0; i < tam; i++) {
-                list[i][0] = lista.get(i).getFolio_cliente().toString();
-                list[i][1] = lista.get(i).getNombre() + " "
-                        + lista.get(i).getApellido_p() + " "
-                        + lista.get(i).getApellido_m();
-                list[i][2] = lista.get(i).getMunicipio() + ", "
-                        + lista.get(i).getResidencia() + ", m: "
-                        + String.valueOf(lista.get(i).getNumero_manzana())
-                        + ", l: "
-                        + String.valueOf(lista.get(i).getNumero_lote());
-                list[i][3] = lista.get(i).getCelular();
-                Importe.setText(String.valueOf(lista.get(i).getDeuda()));
-                consumo = lista.get(i).getConsumo();
-                if (Importe.getText().equals("0.0")) {
-                    Pagar.setEnabled(false);
-                } else {
-                    //Pagar.setEnabled(true);
-                    Pago.setEditable(true);
-                    recibido.setEditable(true);
-                }
+
+    private void DataTable(ArrayList<Cliente> datos) {
+        temp.setRowCount(0);
+        for (Cliente dato : datos) {
+            Object[] fila = {
+                dato.getFolio_cliente(),
+                dato.getNombre() + " " + dato.getApellido_p() + " " + dato.getApellido_m(),
+                dato.getMunicipio() + " " + dato.getResidencia() + " mnz: " + dato.getNumero_manzana() + " Lt: " + dato.getNumero_lote(),
+                dato.getCelular()
+            };
+            temp.addRow(fila);
+            Importe.setText(String.valueOf(dato.getDeuda()));
+            consumo = dato.getConsumo();
+            if (Importe.getText().equals("0.0")) {
+                Pagar.setEnabled(false);
+                Pago.setEditable(false);
+                D_pago.setEnabled(false);
+                T_pago.setEnabled(false);
+            } else {
+                D_pago.setEnabled(true);
+                T_pago.setEnabled(true);
+                Pago.setEditable(true);
+                Pago.setEnabled(true);
+                recibido.setEditable(true);
+                recibido.setEnabled(true);
             }
-            String head[] = {"N° Cte.", "Nombre", "Domicilio", "Celular"};
-            Integer TamañoColumna[] = {10, 100, 100, 20};
-            Jtable(Datos_Cliente, list, head, 4, TamañoColumna);
-            Cargando.setVisible(false);
+        }
+        setCellRender(Datos_Cliente);
+        Abonos.setEnabled(true);
+        Cargando.setVisible(false);
+    }
+
+    private void contrato(String num) {
+        ArrayList<Cliente> lista = CTC.pagocl_ct(Integer.parseInt(num));
+        if (!lista.isEmpty()) {
+            Mes(Integer.parseInt(Dato.getText()));
+            DataTable(lista);
         } else {
             Limpiar(true);
         }
     }
-    
+
     private void cte(String num) {
-        ClienteDaoR cs = new ClienteDaoR();
-        List<Cliente> lista = cs.Pagocl_cte(Integer.parseInt(num));
+        ArrayList<Cliente> lista = CTC.pagocl_cte(Integer.parseInt(num));
         int tam = lista.size();
-        if (tam > 0) {
+        if (!lista.isEmpty()) {
             if (tam > 1) {
                 ContratosC cc = new ContratosC(Integer.parseInt(num), "Elija un contrato", "Servicio", this);
                 cc.setVisible(true);
-                
             } else {
-                
-                String list[][] = new String[tam][4];
-                for (int i = 0; i < tam; i++) {
-                    list[i][0] = lista.get(i).getFolio_cliente().toString();
-                    list[i][1] = lista.get(i).getNombre() + " "
-                            + lista.get(i).getApellido_p() + " "
-                            + lista.get(i).getApellido_m();
-                    list[i][2] = lista.get(i).getMunicipio() + ", "
-                            + lista.get(i).getResidencia() + ", m: "
-                            + String.valueOf(lista.get(i).getNumero_manzana()) + ", l: "
-                            + String.valueOf(lista.get(i).getNumero_lote());
-                    list[i][3] = lista.get(i).getCelular();
-                    Importe.setText(String.valueOf(lista.get(i).getDeuda()));
-                    if (Importe.getText().equals("0.0")) {
-                        Pagar.setEnabled(false);
-                    } else {
-                        //Pagar.setEnabled(true);
-                        Pago.setEditable(true);
-                        recibido.setEditable(true);
-                    }
-                }
-                String head[] = {"N° Cte.", "Nombre", "Domicilio", "Celular"};
-                Integer TamañoColumna[] = {10, 100, 100, 20};
-                Jtable(Datos_Cliente, list, head, 4, TamañoColumna);
-                Cargando.setVisible(false);
+                Mes(Integer.parseInt(Dato.getText()));
+                DataTable(lista);
             }
         } else {
             Limpiar(true);
         }
-        
+
     }
-    
+
     private void num(String number) {
-        ClienteDaoR cs = new ClienteDaoR();
-        List<Cliente> lista = cs.Pagocl_num(number);
+        ArrayList<Cliente> lista = CTC.pagocl_num(number);
         int tam = lista.size();
-        if (tam > 0) {
+        if (!lista.isEmpty()) {
             if (tam > 1) {
-                
-                int fol = 0;
-                for (int i = 0; i < tam; i++) {
-                    fol = lista.get(i).getFolio_cliente();
-                }
-                
+                int fol;
+                fol = lista.get(0).getFolio_cliente();
                 ContratosC cc = new ContratosC(fol, "Elija un contrato", "Servicio", this);
                 cc.setVisible(true);
-                
             } else {
-                String list[][] = new String[tam][4];
-                for (int i = 0; i < tam; i++) {
-                    list[i][0] = lista.get(i).getFolio_cliente().toString();
-                    list[i][1] = lista.get(i).getNombre() + " "
-                            + lista.get(i).getApellido_p() + " "
-                            + lista.get(i).getApellido_m();
-                    list[i][2] = lista.get(i).getMunicipio() + ", "
-                            + lista.get(i).getResidencia() + ", m: "
-                            + String.valueOf(lista.get(i).getNumero_manzana()) + ", l: "
-                            + String.valueOf(lista.get(i).getNumero_lote());
-                    list[i][3] = lista.get(i).getCelular();
-                    Importe.setText(String.valueOf(lista.get(i).getDeuda()));
-                    if (Importe.getText().equals("0.0")) {
-                        Pagar.setEnabled(false);
-                    } else {
-                        //Pagar.setEnabled(true);
-                        Pago.setEditable(true);
-                        recibido.setEditable(true);
-                    }
-                }
-                String head[] = {"N° Cte.", "Nombre", "Domicilio", "Celular"};
-                Integer TamañoColumna[] = {10, 100, 100, 20};
-                Jtable(Datos_Cliente, list, head, 4, TamañoColumna);
-                Cargando.setVisible(false);
+                Mes(Integer.parseInt(Dato.getText()));
+                DataTable(lista);
             }
         } else {
             numt();
         }
-        
+
     }
-    
+
     private void numt() {
-        ClienteDaoR cs = new ClienteDaoR();
-        List<Cliente> lista = cs.Pagocl_numT(Dato.getText());
+        ArrayList<Cliente> lista = CTC.pagocl_numT(Dato.getText());
         int tam = lista.size();
-        if (tam > 0) {
+        if (!lista.isEmpty()) {
             if (tam > 1) {
-                
-                int fol = 0;
-                for (int i = 0; i < tam; i++) {
-                    fol = lista.get(i).getFolio_cliente();
-                }
-                
+                int fol;
+                fol = lista.get(0).getFolio_cliente();
                 ContratosC cc = new ContratosC(fol, "Elija un contrato", "Servicio", this);
                 cc.setVisible(true);
-                
             } else {
-                String list[][] = new String[tam][4];
-                for (int i = 0; i < tam; i++) {
-                    list[i][0] = lista.get(i).getFolio_cliente().toString();
-                    list[i][1] = lista.get(i).getNombre() + " "
-                            + lista.get(i).getApellido_p() + " "
-                            + lista.get(i).getApellido_m();
-                    list[i][2] = lista.get(i).getMunicipio() + ", "
-                            + lista.get(i).getResidencia() + ", m: "
-                            + String.valueOf(lista.get(i).getNumero_manzana()) + ", l: "
-                            + String.valueOf(lista.get(i).getNumero_lote());
-                    list[i][3] = lista.get(i).getCelular();
-                    Importe.setText(String.valueOf(lista.get(i).getDeuda()));
-                    if (Importe.getText().equals("0.0")) {
-                        Pagar.setEnabled(false);
-                    } else {
-                        //Pagar.setEnabled(true);
-                        Pago.setEditable(true);
-                        recibido.setEditable(true);
-                    }
-                }
-                String head[] = {"N° Cte.", "Nombre", "Domicilio", "Celular"};
-                Integer TamañoColumna[] = {10, 100, 100, 20};
-                Jtable(Datos_Cliente, list, head, 4, TamañoColumna);
-                Cargando.setVisible(false);
+                Mes(Integer.parseInt(Dato.getText()));
+                DataTable(lista);
             }
         } else {
             Limpiar(true);
         }
-        
     }
-    
+
     private void Limpiar(boolean mostrar) {
+        Cargando.setVisible(false);
+        Buscar.setEnabled(false);
+        Busqueda.setSelectedIndex(0);
         recibido.setText("");
         Dato.setText("");
         Informacion_deudas.setText("");
         Mes_pagar.setText(" Mes atrasado");
         Importe.setText(" Importe a pagar");
-        Pago.setText(" Cantidad a pagar");
         Cambio.setText("$0");
         Pagar.setEnabled(false);
         D_pago.setSelectedIndex(0);
         T_pago.setSelectedIndex(0);
-        try {
-            temp = (DefaultTableModel) Datos_Cliente.getModel();
-            int a = temp.getRowCount();
-            for (int i = 0; i < a; i++) {
-                temp.removeRow(0);
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        temp.setRowCount(0);
+        Pago.setText("");
+        Pago.setEnabled(false);
+        recibido.setEnabled(false);
+        D_pago.setEnabled(false);
+        T_pago.setEnabled(false);
+        Abonos.setEnabled(false);
         if (mostrar) {
             JOptionPane.showMessageDialog(this, "No se encontro registro alguno", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    //
     private void Mes(int id) {
-        LecturapagoDao lp = new LecturapagoDao();
-        List<LecturaPago> lista = lp.Mes_adeudo(id);
-        int tam = lista.size();
-        
-        if (tam > 0) {
-            for (int i = 0; i < tam; i++) {
-                mes = lista.get(i).getMes();
-                Mes_pagar.setText(lista.get(i).getMes() + ": $" + lista.get(i).getAdeudo());
-                Lectura_pago = lista.get(i).getIdLectPago();
-                Fecha_pago = lista.get(i).getFechaHora().toString();
-            }
+        LecturaPago lista = LP.Mes_adeudo(id);
+        if (lista.getIdLectPago() != null) {
+            mes = lista.getMes();
+            Mes_pagar.setText(lista.getMes() + ": $" + lista.getAdeudo());
+            Lectura_pago = lista.getIdLectPago();
+            Fecha_pago = lista.getFechaHora().toString();
             Meses_deber(id);
         } else {
+            Limpiar(false);
             Mes_pagar.setText("No hay deuda");
         }
     }
-    
+
     private void Meses_deber(int id) {
-        LecturapagoDao lp = new LecturapagoDao();
-        List<LecturaPago> lista = lp.Meses_adeudo(id);
+        ArrayList<LecturaPago> lista = LP.Meses_adeudo(id);
         int tam = lista.size();
-        
-        if (tam > 0) {
+        int i = 0;
+        if (!lista.isEmpty()) {
+            Informacion_deudas.setText("");
             Adeudos = new String[tam][2];
-            for (int i = 0; i < tam; i++) {
-                Adeudos[i][0] = lista.get(i).getMes();
-                Adeudos[i][1] = lista.get(i).getAdeudo().toString();
-                Informacion_deudas.append(lista.get(i).getMes() + ":\t");
-                Informacion_deudas.append(lista.get(i).getAdeudo().toString() + "\n");
+            for (LecturaPago lecturaPago : lista) {
+                Adeudos[i][0] = lecturaPago.getMes();
+                Adeudos[i][1] = lecturaPago.getAdeudo().toString();
+                Informacion_deudas.append(lecturaPago.getMes() + ":\t" + lecturaPago.getAdeudo().toString() + "\n");
+                i++;
             }
         } else {
+            Limpiar(false);
             Mes_pagar.setText("No hay deudas");
         }
     }
-    
+
     private void Descuentos_pagos() {
-        Cat_descuentoDao ds = new Cat_descuentoDao();
-        List<Cat_descuento> lista = ds.ObtenerDescuentos();
-        int tam = lista.size();
-        Descuentos = new String[tam][2];
-        for (int i = 0; i < tam; i++) {
-            Descuentos[i][0] = lista.get(i).getId_desc().toString();
-            Descuentos[i][1] = lista.get(i).getPorcentaje().toString();
-            D_pago.addItem(lista.get(i).getPorcentaje().toString());
+        CC.setOpcion(1);
+        CC.setOpcionS("porcentaje asc");
+        ArrayList<Cat_descuento> lista = (ArrayList<Cat_descuento>) CC.Read();
+        if (lista.size() > 0) {
+            D_pago.setEnabled(true);
+            Pagar.setEnabled(true);
+            Descuentos = lista;
+            lista.forEach((descuento) -> {
+                D_pago.addItem(descuento.getPorcentaje().toString());
+            });
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontraron Descuentos disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
+            D_pago.setEnabled(false);
+            Pagar.setEnabled(false);
         }
-        
     }
-    
+
     private void Tipo_pago() {
-        
-        CatalogosDao cs = new CatalogosDao();
-        List<Cat_pago> lista = cs.Tipo_pago();
-        int tam = lista.size();
-        Tipo_pago = new String[tam][2];
-        for (int i = 0; i < tam; i++) {
-            Tipo_pago[i][0] = lista.get(i).getId_pago().toString();
-            Tipo_pago[i][1] = lista.get(i).getTipo_pago();
-            T_pago.addItem(lista.get(i).getTipo_pago());
+        CC.setOpcion(4);
+        ArrayList<Cat_pago> lista = (ArrayList<Cat_pago>) CC.Read();
+        if (lista.size() > 0) {
+            T_pago.setEnabled(true);
+            Pagar.setEnabled(true);
+            Tipo_pago = lista;
+            lista.forEach((tipo_pago) -> {
+                T_pago.addItem(tipo_pago.getTipo_pago());
+            });
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontraron Tipos de pago disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
+            T_pago.setEnabled(false);
+            Pagar.setEnabled(false);
         }
-        
     }
 
     //realizar pago
     private void InsertarPago() {
-        Det_abonoDao DA = new Det_abonoDao();
-        
-        DetAbono DAB = new DetAbono(Double.parseDouble(Pago.getText()), Lectura_pago, id_TipoPago, id_descuento, folio_ventanilla, Double.parseDouble(recibido.getText()));
-        
-        id_abono = DA.InsertarDetAbono(DAB);
-        
+        DetAbono DAB = new DetAbono();
+        DAB.setAbono(Double.parseDouble(Pago.getText()));
+        DAB.setId_lectura_pago(Lectura_pago);
+        DAB.setId_tipo_pago(id_TipoPago);
+        DAB.setId_desc(id_descuento);
+        DAB.setFolio_ventanilla(folio_ventanilla);
+        DAB.setPagado(Double.parseDouble(recibido.getText()));
+
+        DAC.setAbono(DAB);
+        id_abono = DAC.Create();
+
         if (id_abono != -1) {
             JOptionPane.showMessageDialog(this, "Pago Realizado", "!Exito¡", JOptionPane.INFORMATION_MESSAGE);
             InsertarTicket(id_abono, Lectura_pago);
-            //Animacion(false, true);
         } else {
             JOptionPane.showMessageDialog(this, "El pago no se pudo realizar", "Error :(", JOptionPane.ERROR_MESSAGE);
             Animacion(false, true, false);
         }
-        
     }
-    
+
     private void InsertarTicket(int id_abono, int Lectura_pago) {
         TicketDao TD = new TicketDao();
-        
+
         Ticket Tk = new Ticket(id_abono, Lectura_pago);
-        
+
         int id_ticket = TD.InsertarTicket(Tk);
-        
+
         if (id_ticket == -1) {
             JOptionPane.showMessageDialog(this, "No se pudo generar el ticket", "Error :(", JOptionPane.ERROR_MESSAGE);
             Animacion(false, true, false);
@@ -1013,39 +960,22 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             Limpiar(false);
         }
     }
-    
+
     private void MandarInformacion(int ticket) {
         double descuento_pago = Double.parseDouble(D_pago.getSelectedItem().toString()) / 100.0 * Double.parseDouble(Pago.getText());
         Double cambio = (Double.parseDouble(recibido.getText()) - Double.parseDouble(Pago.getText()) + descuento_pago);
         ticket_generado tg = new ticket_generado(ticket, Integer.parseInt(Dato.getText()), mes, consumo, Double.parseDouble(Importe.getText()), T_pago.getSelectedItem().toString(), Double.parseDouble(D_pago.getSelectedItem().toString()), Double.parseDouble(Pago.getText()), cambio);
-        Cliente CL = new Cliente(Integer.parseInt(Datos_Cliente.getValueAt(0, 0).toString()), Datos_Cliente.getValueAt(0, 1).toString(), Datos_Cliente.getValueAt(0, 2).toString());
+
+        Cliente CL = new Cliente();
+
+        CL.setFolio_cliente(Integer.parseInt(Datos_Cliente.getValueAt(0, 0).toString()));
+        CL.setNombre(Datos_Cliente.getValueAt(0, 1).toString());
+        CL.setResidencia(Datos_Cliente.getValueAt(0, 2).toString());
+
         TicketVista TV = new TicketVista(CL);
         TV.setVisible(true);
     }
-    
-    private void Jtable(JTable x, String list[][], String Head[], int columnas, Integer tamañoC[]) {
-        
-        if (list.length > 0) {
-            x.setModel(new javax.swing.table.DefaultTableModel(list, Head) {
-                boolean[] canEdit = new boolean[]{
-                    false, false, false, false, false, false, false, false
-                };
-                
-                @Override
-                public boolean isCellEditable(int rowIndex, int columnIndex) {
-                    return canEdit[columnIndex];
-                }
-            });
-            for (int i = 0; i < columnas; i++) {
-                x.getColumnModel().getColumn(i).setPreferredWidth(tamañoC[i]);
-            }
-            setCellRender(x);
-        } else {
-            x.setModel(new javax.swing.table.DefaultTableModel(list, Head));
-        }
-        
-    }
-    
+
     public void setCellRender(JTable table) {
         Enumeration<TableColumn> en = table.getColumnModel().getColumns();
         while (en.hasMoreElements()) {
@@ -1053,7 +983,7 @@ public class Servicio_Responsive extends javax.swing.JPanel {
             tc.setCellRenderer(new MiRenderer());
         }
     }
-    
+
     private void Animacion(boolean gif, boolean campos, boolean ref) {
         Cambio.setEnabled(campos);
         Dato.setEditable(campos);
@@ -1068,34 +998,22 @@ public class Servicio_Responsive extends javax.swing.JPanel {
         referencia.setVisible(ref);
         Generando.setVisible(gif);
     }
-    
+
     private void ValidarBusqueda() {
-        String seleccionado = Busqueda.getSelectedItem().toString();
-        
-        if (Busqueda.getSelectedIndex() > 0 && !Dato.getText().isEmpty()) {
-            Buscar.setEnabled(true);
-        } else {
-            Buscar.setEnabled(false);
-        }
-        
-        if (Dato.getText().trim().length() >= 10 && seleccionado.equals("Folio contrato")) {
-            Buscar.setEnabled(false);
-        }
-        if (Dato.getText().trim().length() >= 10 && seleccionado.equals("Folio cliente")) {
-            Buscar.setEnabled(false);
-        }
+        Buscar.setEnabled(!Dato.getText().isEmpty() && Busqueda.getSelectedIndex() > 0);
     }
-    
+
     public void Paneles(Component h) {
-        
+
         h.setLocation(0, 0);
-        
+
         Contenedor.removeAll();
         Contenedor.add(h, BorderLayout.CENTER);
         Contenedor.revalidate();
         Contenedor.repaint();
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Abonos;
     public static javax.swing.JButton Buscar;
     public static javax.swing.JComboBox<String> Busqueda;
     private javax.swing.JTextField Cambio;

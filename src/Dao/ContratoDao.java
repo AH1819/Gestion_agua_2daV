@@ -1,7 +1,7 @@
 package Dao;
 
 import Conexion.ConexionBD;
-import Entity.Contrato;
+import Modelo.Contrato;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,14 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.Setter;
 
 public class ContratoDao {
 
     private static ResultSet Resultado;
     private final ConexionBD conexion = ConexionBD.getInstance();
     private PreparedStatement comando = null;
+    @Setter
+    Contrato contrato;
 
-    public int InsertarContrato(Contrato contrato) {
+    public int InsertarContrato() {
         int ret = 0;
 
         String sql = "insert into contrato (municipio,residencia,nombre_calle,calle_referencia,observaciones,numero_mzn,numero_lt,consec,id_consumo,id_periodo,folio_cte,status) values (?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -55,10 +58,21 @@ public class ContratoDao {
         }
     }
 
-    public int ActualizarContrato(Contrato contrato) {
-        int ret = 0;
+    public boolean ActualizarContrato() {
+        boolean ret;
 
-        String sql = "update contrato set municipio = ? , residencia = ?, nombre_calle = ?, calle_referencia = ?,observaciones = ?, numero_mzn = ?, numero_lt = ? where folio_contrato = ?";
+        String sql
+                = "update contrato set municipio = ? , "
+                + "residencia = ?, "
+                + "nombre_calle = ?, "
+                + "calle_referencia = ?,"
+                + "observaciones = ?, "
+                + "numero_mzn = ?, "
+                + "numero_lt = ?, "
+                + "consec = ?, "
+                + "id_consumo = ?, "
+                + "id_periodo = ? "
+                + "where folio_contrato = ?";
 
         try {
             comando = conexion.conectar().prepareStatement(sql);
@@ -69,22 +83,27 @@ public class ContratoDao {
             comando.setString(5, contrato.getObservaciones());
             comando.setInt(6, contrato.getNumeroMzn());
             comando.setInt(7, contrato.getNumeroLt());
-            comando.setInt(8, contrato.getFolioContrato());
+            comando.setInt(8, contrato.getConsec());
+            comando.setInt(9, contrato.getId_consumo());
+            comando.setInt(10, contrato.getId_periodo());
+            comando.setInt(11, contrato.getFolioContrato());
 
             comando.executeUpdate();
 
             conexion.conectar().close();
             comando.close();
 
+            ret = true;
+
         } catch (SQLException ex) {
             System.out.println(ex);
-            return -1;
+            ret = false;
         }
         return ret;
     }
 
-    public List<Contrato> MostrarContratos(int opcion) {
-        List<Contrato> CT = new ArrayList<>();
+    public ArrayList<Contrato> MostrarContratos(int opcion) {
+        ArrayList<Contrato> CT = new ArrayList<>();
         String opcionTipo = "";
         switch (opcion) {
             case 0:
@@ -140,29 +159,32 @@ public class ContratoDao {
         } catch (SQLException ex) {
             Logger.getLogger(ContratoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return CT;
     }
 
-    public int DarDeBajaContrato(int folio) {
-        int ret = 0;
+    public boolean DarDeBajaContrato(int folio) {
+        boolean ret;
         String status = "inactivo";
         String sql = "update contrato set status = ? where folio_contrato = ?";
 
         try {
+
             comando = conexion.conectar().prepareStatement(sql);
             comando.setString(1, status);
             comando.setInt(2, folio);
 
-            ret = comando.executeUpdate();
+            comando.executeUpdate();
+
+            ret = true;
         } catch (SQLException ex) {
-            Logger.getLogger(ClienteDaoR.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+            Logger.getLogger(ClienteDao.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+            ret = false;
         }
         return ret;
     }
 
-    public int DarDeAltaContrato(int folio) {
-        int ret = 0;
+    public boolean DarDeAltaContrato(int folio) {
+        boolean ret;
         String status = "activo";
         String sql = "update contrato set status = ? where folio_contrato = ?";
 
@@ -171,89 +193,47 @@ public class ContratoDao {
             comando.setString(1, status);
             comando.setInt(2, folio);
 
-            ret = comando.executeUpdate();
+            comando.executeUpdate();
+
+            ret = true;
+
         } catch (SQLException ex) {
-            Logger.getLogger(ClienteDaoR.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+
+            Logger.getLogger(ClienteDao.class.getName()).log(Level.SEVERE, null, ex.getMessage());
+
+            ret = false;
+
         }
         return ret;
     }
 
-    public List<Contrato> SearchContratos(int folio) {
-        List<Contrato> SCT = new ArrayList<>();
+    public Contrato SearchContratos_c(int folio) {
+        contrato = new Contrato();
 
-        String sql = "select ct.folio_contrato,cl.nombre,ct.municipio,ct.residencia,"
-                + "ct.nombre_calle,ct.calle_referencia,ct.numero_mzn,ct.numero_lt,"
-                + "ct.consec,cc.tipo_consumo,cp.tipo_periodo,ct.deuda,ct.folio_cte,"
-                + "ct.status "
-                + "from contrato ct "
-                + "inner join cat_consumo cc "
-                + "on cc.id_consumo = ct.id_consumo "
-                + "inner join cliente cl "
-                + "on cl.folio_cte = ct.folio_cte "
-                + "inner join cat_periodo cp "
-                + "on cp.id_periodo = ct.id_periodo "
-                + "where ct.folio_contrato = ? "
-                + "order by folio_contrato";
+        String sql = "select * from contrato where folio_contrato = ?";
 
         try {
             comando = conexion.conectar().prepareStatement(sql);
             comando.setInt(1, folio);
             Resultado = comando.executeQuery();
             if (Resultado.next()) {
-                Contrato ct = new Contrato();
-                ct.setFolioContrato(Integer.parseInt(Resultado.getString("folio_contrato")));
-                ct.setNombre(Resultado.getString("nombre"));
-                ct.setMunicipio(Resultado.getString("municipio"));
-                ct.setResidencia(Resultado.getString("residencia"));
-                ct.setNombreCalle(Resultado.getString("nombre_calle"));
-                ct.setCalleReferencia(Resultado.getString("calle_referencia"));
-                ct.setNumeroMzn(Resultado.getInt("numero_mzn"));
-                ct.setNumeroLt(Resultado.getInt("numero_lt"));
-                ct.setConsec(Resultado.getInt("consec"));
-                ct.setTipo_consumo(Resultado.getString("tipo_consumo"));
-                ct.setTipo_periodo(Resultado.getString("tipo_periodo"));
-                ct.setDeuda(Resultado.getDouble("deuda"));
-                ct.setFolio_cte(Resultado.getInt("folio_cte"));
-                ct.setStatus(Resultado.getString("status"));
-                SCT.add(ct);
+                contrato.setFolioContrato(Integer.parseInt(Resultado.getString("folio_contrato")));
+                contrato.setMunicipio(Resultado.getString("municipio"));
+                contrato.setResidencia(Resultado.getString("residencia"));
+                contrato.setNombreCalle(Resultado.getString("nombre_calle"));
+                contrato.setCalleReferencia(Resultado.getString("calle_referencia"));
+                contrato.setObservaciones(Resultado.getString("observaciones"));
+                contrato.setNumeroMzn(Resultado.getInt("numero_mzn"));
+                contrato.setNumeroLt(Resultado.getInt("numero_lt"));
+                contrato.setConsec(Resultado.getInt("consec"));
+                contrato.setId_consumo(Resultado.getInt("id_consumo"));
+                contrato.setId_periodo(Resultado.getInt("id_periodo"));
+                contrato.setFolio_cte(Resultado.getInt("folio_cte"));
             }
         } catch (SQLException ex) {
             Logger.getLogger(ContratoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return SCT;
-    }
-
-    public List<Contrato> SearchContratos_c(int folio) {
-        List<Contrato> SCT = new ArrayList<>();
-
-        String sql = "select * from contrato where folio_contrato = ? order by folio_contrato";
-
-        try {
-            comando = conexion.conectar().prepareStatement(sql);
-            comando.setInt(1, folio);
-            Resultado = comando.executeQuery();
-            if (Resultado.next()) {
-                Contrato ct = new Contrato();
-                ct.setFolioContrato(Integer.parseInt(Resultado.getString("folio_contrato")));
-                ct.setMunicipio(Resultado.getString("municipio"));
-                ct.setResidencia(Resultado.getString("residencia"));
-                ct.setNombreCalle(Resultado.getString("nombre_calle"));
-                ct.setCalleReferencia(Resultado.getString("calle_referencia"));
-                ct.setObservaciones(Resultado.getString("observaciones"));
-                ct.setNumeroMzn(Resultado.getInt("numero_mzn"));
-                ct.setNumeroLt(Resultado.getInt("numero_lt"));
-                ct.setConsec(Resultado.getInt("consec"));
-                ct.setId_consumo(Resultado.getInt("id_consumo"));
-                ct.setId_periodo(Resultado.getInt("id_periodo"));
-                ct.setFolio_cte(Resultado.getInt("folio_cte"));
-                SCT.add(ct);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ContratoDao.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        return SCT;
+        return contrato;
     }
 
     public List<Contrato> ContratosC(int folio) {
@@ -286,7 +266,6 @@ public class ContratoDao {
         } catch (SQLException ex) {
             Logger.getLogger(ContratoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return SCT;
     }
 
@@ -307,13 +286,11 @@ public class ContratoDao {
         } catch (SQLException ex) {
             Logger.getLogger(ContratoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         return SCT;
     }
 
-    public List<Contrato> GenerarContrato(int folio) {
-        List<Contrato> SCT = new ArrayList<>();
-
+    public Contrato GenerarContrato(int folio) {
+        contrato = new Contrato();
         String sql = "select cliente.folio_cte,cliente.nombre,cliente.apellido_p,cliente.apellido_m,contrato.folio_contrato,contrato.municipio,contrato.residencia,"
                 + "contrato.nombre_calle,contrato.numero_mzn,contrato.numero_lt,contrato.fecha_creacion "
                 + "from contrato "
@@ -326,26 +303,22 @@ public class ContratoDao {
             comando = conexion.conectar().prepareStatement(sql);
             comando.setInt(1, folio);
             Resultado = comando.executeQuery();
-            while (Resultado.next()) {
-                Contrato ct = new Contrato();
-                ct.setFolioContrato(Integer.parseInt(Resultado.getString("folio_contrato")));
-                ct.setFolio_cte(Resultado.getInt("folio_cte"));
-                ct.setMunicipio(Resultado.getString("municipio"));
-                ct.setResidencia(Resultado.getString("residencia"));
-                ct.setNombreCalle(Resultado.getString("nombre_calle"));
-                ct.setNumeroMzn(Resultado.getInt("numero_mzn"));
-                ct.setNumeroLt(Resultado.getInt("numero_lt"));
-                ct.setCreacion_contrato(Resultado.getDate("fecha_creacion"));
-                ct.setNombre(Resultado.getString("nombre") + " " + Resultado.getString("apellido_p") + " " + Resultado.getString("apellido_m"));
-                SCT.add(ct);
+            if (Resultado.next()) {
+
+                contrato.setFolioContrato(Integer.parseInt(Resultado.getString("folio_contrato")));
+                contrato.setFolio_cte(Resultado.getInt("folio_cte"));
+                contrato.setMunicipio(Resultado.getString("municipio"));
+                contrato.setResidencia(Resultado.getString("residencia"));
+                contrato.setNombreCalle(Resultado.getString("nombre_calle"));
+                contrato.setNumeroMzn(Resultado.getInt("numero_mzn"));
+                contrato.setNumeroLt(Resultado.getInt("numero_lt"));
+                contrato.setCreacion_contrato(Resultado.getDate("fecha_creacion"));
+                contrato.setNombre(Resultado.getString("nombre") + " " + Resultado.getString("apellido_p") + " " + Resultado.getString("apellido_m"));
 
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ContratoDao.class
-                    .getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ContratoDao.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        return SCT;
+        return contrato;
     }
-
 }

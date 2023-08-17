@@ -1,23 +1,25 @@
 package Vista;
 
-import Dao.CatalogosDao;
-import Dao.ContratoDao;
-import Dao.TarifaDao;
-import Entity.Cat_Consumo;
-import Entity.Cat_periodo;
-import Entity.Cliente;
-import Entity.Contrato;
-import Entity.Contrato_generado;
-import Entity.DetTipoconsumoTarifa;
-import Entity.Empresa;
-import Entity.ErrorsAndSuccessesBD;
-import Entity.Jasper;
+import Controlador.Catalogo_Controller;
+import Controlador.Contrato_Controller;
+import Controlador.Lecturas_Controller;
+import Modelo.Cat_Consumo;
+import Modelo.Cat_periodo;
+import Modelo.Cliente;
+import Modelo.Contrato;
+import Modelo.Contrato_generado;
+import Modelo.DetTipoconsumoTarifa;
+import Modelo.Empresa;
+import Modelo.ErrorsAndSuccessesBD;
+import Modelo.Jasper;
+import Modelo.LecturaPago;
 import static Vista.Interfaz.Contenedor;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ItemEvent;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
 
@@ -28,25 +30,57 @@ import javax.swing.JOptionPane;
 public class Contrato_data extends javax.swing.JPanel {
 
     Component Ubicacion;
-    String opcion;
-    String opcion_contrato;
-    String observaciones = "sin observaciones";
-    int folio_ct = 0;
-    int idconsumo = 0;
-    int idperiodo = 0;
-    int id_tari = 0;
+    String opcion, opcion_contrato, observaciones = "sin observaciones";
+    int folio_ct = 0, idconsumo = 0, idperiodo = 0, id_tari = 0, id_consumo = 0, id_periodo = 0, id_tarifa = 0;
     boolean edit;
     String[] Mensaje;
-    String[][] Consumos;
-    String[][] Periodos;
-    String[][] Tarifas;
-    String id_consumo, id_periodo, id_tarifa;
+    ArrayList<Cat_Consumo> Consumos;
+    ArrayList<Cat_periodo> Periodos;
+    ArrayList<DetTipoconsumoTarifa> Tarifas;
     Empresa EMP = new Empresa();
     ErrorsAndSuccessesBD es = new ErrorsAndSuccessesBD();
+    Contrato_Controller CC = new Contrato_Controller();
+    Catalogo_Controller cs = new Catalogo_Controller();
+    Contrato CT;
+    Contrato_Vista cv;
 
-    public Contrato_data(Cliente cliente, String opcion, Component ubicacion, int folio) {
+    public Contrato_data(Component cv, Cliente cliente, int folio) {
         initComponents();
-        Ubicacion = ubicacion;
+        espera.setVisible(false);
+        Ubicacion = cv;
+        if (cv.getClass() == Contrato_Vista.class) {
+            this.cv = (Contrato_Vista) cv;
+        }
+        this.opcion_contrato = opcion;
+        MiHilo.start();
+        try {
+            MiHilo.join();
+        } catch (InterruptedException e) {
+            System.out.println(e);
+        }
+        Mensaje = new String[2];
+        Mensaje[0] = "Desea descartar la creacion del contrato?";
+        Mensaje[1] = "Insercion";
+        this.folio_ct = folio;
+        Existencia();
+        if (this.opcion.equals("Si")) {
+            Referencia.setText(cliente.getCalle_referencia());
+            Municipio.setText(cliente.getMunicipio());
+            Residencia.setText(cliente.getResidencia());
+            Nombre_calle.setText(cliente.getNombre_calle());
+            Lote.setText(String.valueOf(cliente.getNumero_lote()));
+            Manzana.setText(String.valueOf(cliente.getNumero_manzana()));
+        }
+    }
+
+    public Contrato_data(Component cv, String opcion, int folio) {
+        initComponents();
+        espera.setVisible(false);
+        this.Ubicacion = cv;
+        if (cv.getClass() == Contrato_Vista.class) {
+            this.cv = (Contrato_Vista) cv;
+        }
+        this.folio_ct = folio;
         this.opcion_contrato = opcion;
         MiHilo.start();
         try {
@@ -55,21 +89,6 @@ public class Contrato_data extends javax.swing.JPanel {
             System.out.println(e);
         }
         switch (opcion) {
-            case "Nuevo Cliente Contrato":
-                Mensaje = new String[2];
-                Mensaje[0] = "Desea descartar la creacion del contrato?";
-                Mensaje[1] = "Insercion";
-
-                Existencia();
-                if (opcion.equals("Si")) {
-                    Referencia.setText(cliente.getCalle_referencia());
-                    Municipio.setText(cliente.getMunicipio());
-                    Residencia.setText(cliente.getResidencia());
-                    Nombre_calle.setText(cliente.getNombre_calle());
-                    Lote.setText(String.valueOf(cliente.getNumero_lote()));
-                    Manzana.setText(String.valueOf(cliente.getNumero_manzana()));
-                }
-                break;
             case "Nuevo Contrato":
                 Mensaje = new String[2];
                 Mensaje[0] = "Desea descartar la creacion del contrato?";
@@ -91,10 +110,6 @@ public class Contrato_data extends javax.swing.JPanel {
         }
     }
 
-    public Contrato_data() {
-
-    }
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -113,7 +128,7 @@ public class Contrato_data extends javax.swing.JPanel {
         Periodo = new javax.swing.JComboBox<>();
         Tipo_p = new javax.swing.JLabel();
         Tipo_c = new javax.swing.JLabel();
-        tarifa = new javax.swing.JLabel();
+        tarifa_label = new javax.swing.JLabel();
         rerefencia = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
@@ -123,6 +138,7 @@ public class Contrato_data extends javax.swing.JPanel {
         observacione = new javax.swing.JLabel();
         Regresar = new javax.swing.JButton();
         Registrar = new javax.swing.JButton();
+        espera = new javax.swing.JLabel();
 
         Contrato.setBackground(new java.awt.Color(255, 255, 255));
         Contrato.setFont(new java.awt.Font("Roboto Light", 1, 18)); // NOI18N
@@ -345,9 +361,9 @@ public class Contrato_data extends javax.swing.JPanel {
         Tipo_c.setForeground(new java.awt.Color(0, 0, 0));
         Tipo_c.setText("Tipo de consumo:");
 
-        tarifa.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
-        tarifa.setForeground(new java.awt.Color(0, 0, 0));
-        tarifa.setText("Tarifa:");
+        tarifa_label.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
+        tarifa_label.setForeground(new java.awt.Color(0, 0, 0));
+        tarifa_label.setText("Tarifa:");
 
         rerefencia.setBackground(new java.awt.Color(0, 0, 0));
         rerefencia.setFont(new java.awt.Font("Roboto", 0, 14)); // NOI18N
@@ -407,6 +423,8 @@ public class Contrato_data extends javax.swing.JPanel {
             }
         });
 
+        espera.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Recursos/cargando.gif"))); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -416,10 +434,6 @@ public class Contrato_data extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(Contrato, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(Regresar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 750, Short.MAX_VALUE)
-                        .addComponent(Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel14, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -427,7 +441,7 @@ public class Contrato_data extends javax.swing.JPanel {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                 .addComponent(jLabel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(Municipio, javax.swing.GroupLayout.DEFAULT_SIZE, 170, Short.MAX_VALUE)))
-                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGap(18, 91, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -435,30 +449,37 @@ public class Contrato_data extends javax.swing.JPanel {
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(Lote, javax.swing.GroupLayout.DEFAULT_SIZE, 106, Short.MAX_VALUE)
                                 .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Nombre_calle, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Consumo, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(Tipo_c, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(Referencia, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(Referencia, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE)
                                     .addComponent(rerefencia, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                                 .addGap(10, 10, 10))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(Tarifa, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(tarifa, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(observacione, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))
+                            .addComponent(Tarifa, javax.swing.GroupLayout.Alignment.TRAILING, 0, 200, Short.MAX_VALUE)
+                            .addComponent(tarifa_label, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                .addComponent(observacione, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE))
+                            .addComponent(Regresar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(Periodo, 0, 200, Short.MAX_VALUE)
-                            .addComponent(Tipo_p, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(Periodo, 0, 200, Short.MAX_VALUE)
+                                .addComponent(Tipo_p, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(espera)
+                                .addGap(73, 73, 73)))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -488,7 +509,7 @@ public class Contrato_data extends javax.swing.JPanel {
                                         .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addComponent(Manzana, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(tarifa, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(tarifa_label, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 0, 0)
                                 .addComponent(Tarifa, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
@@ -505,13 +526,17 @@ public class Contrato_data extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(Periodo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Regresar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 50, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Regresar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Registrar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 60, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(25, 25, 25)
+                        .addComponent(espera, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -597,10 +622,10 @@ public class Contrato_data extends javax.swing.JPanel {
 
     private void ConsumoItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_ConsumoItemStateChanged
         if (evt.getStateChange() == ItemEvent.SELECTED && Consumo.getSelectedIndex() > 0) {
-            for (String[] Cons : Consumos) {
-                if (Cons[1].equals(Consumo.getSelectedItem())) {
-                    idconsumo = Integer.parseInt(Cons[0]);
-                    HiloTarifa.start();
+            for (Cat_Consumo consumo : Consumos) {
+                if (consumo.getTipo_consumo().equals(Consumo.getSelectedItem())) {
+                    idconsumo = consumo.getId_consumo();
+                    GetTarifa(idconsumo);
                 }
             }
         }
@@ -684,11 +709,9 @@ public class Contrato_data extends javax.swing.JPanel {
     private void RegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegresarActionPerformed
         String[] arreglo = {"Si", "No"};
 
-        int opcionp = JOptionPane.showOptionDialog(null, Mensaje[0], Mensaje[1], 0, JOptionPane.QUESTION_MESSAGE, null, arreglo, "Si");
+        int opcionp = JOptionPane.showOptionDialog(this, Mensaje[0], Mensaje[1], 0, JOptionPane.QUESTION_MESSAGE, null, arreglo, "Si");
         if (arreglo[opcionp].equals("Si")) {
             Paneles(Ubicacion);
-        } else {
-            //
         }
     }//GEN-LAST:event_RegresarActionPerformed
 
@@ -696,27 +719,12 @@ public class Contrato_data extends javax.swing.JPanel {
         if (!Observaciones.getText().isEmpty()) {
             observaciones = Observaciones.getText();
         }
-
-        for (String[] Cons : Consumos) {
-            if (Cons[1].equals(Consumo.getSelectedItem())) {
-                idconsumo = Integer.parseInt(Cons[0]);
-            }
-        }
-
-        for (String[] Per : Periodos) {
-            if (Per[1].equals(Periodo.getSelectedItem())) {
-                idperiodo = Integer.parseInt(Per[0]);
-            }
-        }
-
-        if (Periodo.getSelectedIndex() > 0) {
-            for (String[] Tari : Tarifas) {
-                if (Tari[1].equals(Tarifa.getSelectedItem())) {
-                    id_tari = Integer.parseInt(Tari[0]);
-                }
-            }
-        }
-
+        Periodos.stream().filter((periodo) -> (periodo.getTipo_periodo().equals(Periodo.getSelectedItem()))).forEachOrdered((periodo) -> {
+            idperiodo = periodo.getId_periodo();
+        });
+        Tarifas.stream().filter((tarifa) -> (tarifa.getTarifa() == Double.parseDouble(Tarifa.getSelectedItem().toString()))).forEachOrdered((tarifa) -> {
+            id_tari = tarifa.getConsec();
+        });
         if (Municipio.getText().isEmpty()) {
             Municipio.setBorder(BorderFactory.createLineBorder(Color.RED, 1));
             Municipio.requestFocus();
@@ -772,6 +780,7 @@ public class Contrato_data extends javax.swing.JPanel {
                                                     + Tarifa.getSelectedItem() + "\n"
                                                     + observaciones + "\n"
                                                     + Periodo.getSelectedItem());
+                                            espera.setVisible(true);
                                             if (opcion_contrato.equals("Nuevo Cliente Contrato") || opcion_contrato.equals("Nuevo Contrato")) {
                                                 InsertarContrato(folio_ct);
                                             } else if (opcion_contrato.equals("Modificar")) {
@@ -789,11 +798,11 @@ public class Contrato_data extends javax.swing.JPanel {
     }//GEN-LAST:event_RegistrarActionPerformed
 
     private void TarifaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TarifaActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_TarifaActionPerformed
 
     private void PeriodoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PeriodoActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_PeriodoActionPerformed
     private void Paneles(Component h) {
         h.setLocation(0, 0);
@@ -804,52 +813,47 @@ public class Contrato_data extends javax.swing.JPanel {
     }
 
     private void GetContrato(int folio) {
-        ContratoDao cts = new ContratoDao();
-        List<Contrato> lista = cts.SearchContratos_c(folio);
-        int tam = lista.size();
-        for (int i = 0; i < tam; i++) {
-            folio_ct = lista.get(i).getFolioContrato();
-            id_consumo = lista.get(i).getId_consumo().toString();
-            id_periodo = lista.get(i).getId_periodo().toString();
-            id_tarifa = lista.get(i).getConsec().toString();
-            Municipio.setText(lista.get(i).getMunicipio());
-            Residencia.setText(lista.get(i).getResidencia());
-            Nombre_calle.setText(lista.get(i).getNombreCalle());
-            Referencia.setText(lista.get(i).getCalleReferencia());
-            Manzana.setText(lista.get(i).getNumeroMzn().toString());
-            Lote.setText(lista.get(i).getNumeroLt().toString());
-            Observaciones.setText(lista.get(i).getObservaciones());
-        }
-        for (String[] Consumo1 : Consumos) {
-            System.out.println("entrando al for c");
-            if (Consumo1[0].equals(id_consumo)) {
-                System.out.println("valido");
-                Consumo.setSelectedItem(Consumo1[1]);
+        Contrato lista = CC.BuscarContrato(folio);
+        if (lista.getFolioContrato() != null) {
+            folio_ct = lista.getFolioContrato();
+            id_consumo = lista.getId_consumo();
+            id_periodo = lista.getId_periodo();
+            id_tarifa = lista.getConsec();
+            Municipio.setText(lista.getMunicipio());
+            Residencia.setText(lista.getResidencia());
+            Nombre_calle.setText(lista.getNombreCalle());
+            Referencia.setText(lista.getCalleReferencia());
+            Manzana.setText(lista.getNumeroMzn().toString());
+            Lote.setText(lista.getNumeroLt().toString());
+            Observaciones.setText(lista.getObservaciones());
+            if (Consumos != null && Periodos != null) {
+                Consumos.stream().filter((consumo) -> (consumo.getId_consumo() == id_consumo)).forEachOrdered((consumo) -> {
+                    Consumo.setSelectedItem(consumo.getTipo_consumo());
+                });
+                Periodos.stream().filter((periodo) -> (periodo.getId_periodo() == id_periodo)).forEachOrdered((periodo) -> {
+                    Periodo.setSelectedItem(periodo.getTipo_periodo());
+                });
+                HiloTarifa.start();
+                try {
+                    HiloTarifa.join();
+                    Tarifas.forEach((tarifa) -> {
+                        if (tarifa.getConsec() == id_tarifa && tarifa.getId_consumo() == id_consumo) {
+                            Tarifa.setSelectedItem(String.valueOf(tarifa.getTarifa()));
+                        }
+                    });
+                } catch (InterruptedException e) {
+                    System.out.println(e);
+                }
             }
-        }
-        for (String[] Periodo1 : Periodos) {
-            System.out.println("entrando al for p");
-            if (Periodo1[0].equals(id_periodo)) {
-                System.out.println("valido");
-                Periodo.setSelectedItem(Periodo1[1]);
-            }
-        }
-        try {
-            HiloTarifa.join();
-        } catch (InterruptedException e) {
-            System.out.println(e);
-        }
-        for (String[] Tarifa1 : Tarifas) {
-            if (Tarifa1[0].equals("1")) {
-                System.out.println("valido");
-                Tarifa.setSelectedItem(Tarifa1[1]);
-            }
+        } else {
+            JOptionPane.showMessageDialog(this, "No se encontro registro del contrato", "Contrato", JOptionPane.ERROR_MESSAGE);
+            Paneles(Ubicacion);
         }
     }
 
     private void Existencia() {
         String[] arreglo = {"Si", "No"};
-        int opcionp = JOptionPane.showOptionDialog(null, "¿Desea incluir este domicilio en el contrato?", "Contrato", 0, JOptionPane.QUESTION_MESSAGE, null, arreglo, "Si");
+        int opcionp = JOptionPane.showOptionDialog(this, "¿Desea incluir este domicilio en el contrato?", "Contrato", 0, JOptionPane.QUESTION_MESSAGE, null, arreglo, "Si");
         if (arreglo[opcionp].equals("Si")) {
             opcion = "Si";
         } else {
@@ -858,122 +862,167 @@ public class Contrato_data extends javax.swing.JPanel {
     }
 
     private void GetConsumo() {
-
-        CatalogosDao cs = new CatalogosDao();
-        List<Cat_Consumo> lista = cs.GetConsumo();
-        int tam = lista.size();
-        if (tam > 0) {
-            Consumos = new String[tam][2];
-            for (int i = 0; i < tam; i++) {
-                Consumos[i][0] = lista.get(i).getId_consumo().toString();
-                Consumos[i][1] = lista.get(i).getTipo_consumo();
-                Consumo.addItem(lista.get(i).getTipo_consumo());
-            }
+        cs.setOpcion(2);
+        ArrayList<Cat_Consumo> lista = (ArrayList<Cat_Consumo>) cs.Read();
+        if (lista.size() > 0) {
+            System.out.println("entro1");
+            Registrar.setEnabled(true);
+            Consumo.setEnabled(true);
+            Tarifa.setEnabled(true);
+            Periodo.setEnabled(true);
+            Consumos = lista;
+            lista.forEach((cat_Consumo) -> {
+                Consumo.addItem(cat_Consumo.getTipo_consumo());
+            });
+            GetPeriodo();
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron Consumos disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(null, "No se encontraron Consumos disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
             Registrar.setEnabled(false);
+            Consumo.setEnabled(false);
+            Tarifa.setEnabled(false);
+            Periodo.setEnabled(false);
         }
     }
 
     private void GetPeriodo() {
-        CatalogosDao cs = new CatalogosDao();
-        List<Cat_periodo> lista = cs.GetPeriodo();
-        int tam = lista.size();
-        if (tam > 0) {
-            Periodos = new String[tam][2];
-            for (int i = 0; i < tam; i++) {
-                Periodos[i][0] = lista.get(i).getId_periodo().toString();
-                Periodos[i][1] = lista.get(i).getTipo_periodo();
-                Periodo.addItem(lista.get(i).getTipo_periodo());
-            }
+        cs.setOpcion(3);
+        ArrayList<Cat_periodo> lista = (ArrayList<Cat_periodo>) cs.Read();
+        if (lista.size() > 0) {
+            Registrar.setEnabled(true);
+            Consumo.setEnabled(true);
+            Tarifa.setEnabled(true);
+            Periodo.setEnabled(true);
+            Periodos = lista;
+            lista.forEach((periodo) -> {
+                Periodo.addItem(periodo.getTipo_periodo());
+            });
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron Periodos disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(this, "No se encontraron Periodos disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
             Registrar.setEnabled(false);
+            Consumo.setEnabled(false);
+            Tarifa.setEnabled(false);
+            Periodo.setEnabled(false);
         }
     }
+
     Thread MiHilo = new Thread() {
         @Override
         public void run() {
             GetConsumo();
-            GetPeriodo();
         }
     };
 
     Thread HiloTarifa = new Thread() {
         @Override
         public void run() {
-            GetTarifa(idconsumo);
+            GetTarifa(id_consumo);
         }
     };
 
     private void GetTarifa(int id) {
-        TarifaDao ts = new TarifaDao();
-        List<DetTipoconsumoTarifa> lista = ts.Tarifas(id);
-        int tam = lista.size();
+        cs.setOpcion(5);
+        ArrayList<DetTipoconsumoTarifa> lista = (ArrayList<DetTipoconsumoTarifa>) cs.Read();
         Tarifa.removeAllItems();
         Tarifa.addItem("Selecciona una opción");
-        if (tam > 0) {
-            Tarifas = new String[tam][2];
-            for (int i = 0; i < tam; i++) {
-                Tarifas[i][0] = lista.get(i).getConsec().toString();
-                Tarifas[i][1] = lista.get(i).getTarifa().toString();
-                Tarifa.addItem(lista.get(i).getTarifa().toString());
-            }
+        if (lista.size() > 0) {
+            System.out.println("entro");
+            Consumo.setEnabled(true);
+            Tarifa.setEnabled(true);
+            Periodo.setEnabled(true);
+            Registrar.setEnabled(true);
+            Tarifas = lista;
+            lista.forEach((tarifa) -> {
+                if (tarifa.getId_consumo() == id) {
+                    Tarifa.addItem(tarifa.getTarifa().toString());
+                }
+            });
         } else {
-            JOptionPane.showMessageDialog(null, "No se encontraron Tarifas disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
-            Registrar.setEnabled(false);
+            //JOptionPane.showMessageDialog(this, "No se encontraron Tarifas disponibles\n Consulte el problema con el administrador", "Error", JOptionPane.INFORMATION_MESSAGE);
+            Tarifa.setEnabled(false);
+            Consumo.setEnabled(false);
+            Tarifa.setEnabled(false);
+            Periodo.setEnabled(false);
         }
-
     }
 
     private void actualizar() {
-        ContratoDao cs = new ContratoDao();
-        System.out.println(folio_ct);
-        Contrato CT = new Contrato(folio_ct, Municipio.getText(), Residencia.getText(), Nombre_calle.getText(), Referencia.getText(), observaciones,
-                Integer.parseInt(Manzana.getText()), Integer.parseInt(Lote.getText()));
-        es.setResultact(cs.ActualizarContrato(CT));
 
-        if (es.getResultact() == -1) {
+        CT = new Contrato();
+        CT.setFolioContrato(folio_ct);
+        CT.setMunicipio(Municipio.getText());
+        CT.setResidencia(Residencia.getText());
+        CT.setNombreCalle(Nombre_calle.getText());
+        CT.setCalleReferencia(Referencia.getText());
+        CT.setObservaciones(observaciones);
+        CT.setNumeroMzn(Integer.parseInt(Manzana.getText()));
+        CT.setNumeroLt(Integer.parseInt(Lote.getText()));
+        CT.setConsec(id_tari);
+        CT.setId_consumo(idconsumo);
+        CT.setId_periodo(idperiodo);
+        CC.setCt(CT);
+        es.setResultact(CC.Update());
+
+        if (!es.getResultact()) {
             JOptionPane.showMessageDialog(this, "Error al actualizar el contrato", "Error", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            System.out.println(es.getResultact());
             JOptionPane.showMessageDialog(this, "Contrato actualizado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            if (cv != null) {
+                cv.DataTabla();
+            }
             Paneles(Ubicacion);
         }
     }
 
     public void InsertarContrato(int folio) {
-
-        ContratoDao cs = new ContratoDao();
         String status = "activo";
-
-        Contrato CT = new Contrato(Municipio.getText(), Residencia.getText(), Nombre_calle.getText(), Referencia.getText(), observaciones, Integer.parseInt(Manzana.getText()), Integer.parseInt(Lote.getText()), id_tari, idconsumo, idperiodo, folio, status);
-        es.setResultinsert(cs.InsertarContrato(CT));
+        CT = new Contrato();
+        CT.setMunicipio(Municipio.getText());
+        CT.setResidencia(Residencia.getText());
+        CT.setNombreCalle(Nombre_calle.getText());
+        CT.setCalleReferencia(Referencia.getText());
+        CT.setObservaciones(observaciones);
+        CT.setNumeroMzn(Integer.parseInt(Manzana.getText()));
+        CT.setNumeroLt(Integer.parseInt(Lote.getText()));
+        CT.setConsec(id_tari);
+        CT.setId_consumo(idconsumo);
+        CT.setId_periodo(idperiodo);
+        CT.setFolio_cte(folio);
+        CT.setStatus(status);
+        CC.setCt(CT);
+        es.setResultinsert(CC.Create());
         if (es.getResultinsert() == -1) {
-            JOptionPane.showMessageDialog(null, "Hubo un error", "Error", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Hubo un error", "Error", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(null, "Contrato creado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE);
+            LecturaPago LPI = new LecturaPago();
+            LPI.setLecturaIni(0.00);
+            LPI.setLecturaFin(0.00);
+            LPI.setConsumo(0.00);
+            LPI.setFolio_contrato(es.getResultinsert());
+            LPI.setId_m(LocalDate.now().getMonthValue());
+            Lecturas_Controller LC = new Lecturas_Controller();
+            LC.setLectura(LPI);
+            LC.Create();
+            JOptionPane.showMessageDialog(this, "Contrato creado con exito", "Exito", JOptionPane.INFORMATION_MESSAGE);
             Generar_contrato();
         }
     }
 
     private void Generar_contrato() {
-        ContratoDao cs = new ContratoDao();
-        List<Contrato> lista = cs.GenerarContrato(es.getResultinsert());
-        int tam = lista.size();
+        Contrato lista = CC.GenerarContrato(es.getResultinsert());
         Contrato_generado cg = new Contrato_generado();
-        if (tam > 0) {
-            for (int i = 0; i < tam; i++) {
-                cg.setFolio_contrato(lista.get(i).getFolioContrato());
-                cg.setCreacion_contrato(lista.get(i).getCreacion_contrato());
-                cg.setInformativo(EMP.getTerminos_y_condiciones());
-            }
+        if (lista != null) {
+            cg.setFolio_contrato(lista.getFolioContrato());
+            cg.setCreacion_contrato(lista.getCreacion_contrato());
+            cg.setInformativo(EMP.getTerminos_y_condiciones());
 
             Jasper js = new Jasper();
-            js.generar_contraro();
+            js.generar_contraro(espera);
+            if (cv != null) {
+                cv.DataTabla();
+            }
             Paneles(Ubicacion);
         } else {
-            JOptionPane.showMessageDialog(null, "Hubo un error en la ejecucion", "Aviso", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Hubo un error en la ejecucion", "Aviso", JOptionPane.INFORMATION_MESSAGE);
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -992,6 +1041,7 @@ public class Contrato_data extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> Tarifa;
     private javax.swing.JLabel Tipo_c;
     private javax.swing.JLabel Tipo_p;
+    private javax.swing.JLabel espera;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel14;
@@ -1000,6 +1050,6 @@ public class Contrato_data extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JLabel observacione;
     private javax.swing.JLabel rerefencia;
-    private javax.swing.JLabel tarifa;
+    private javax.swing.JLabel tarifa_label;
     // End of variables declaration//GEN-END:variables
 }

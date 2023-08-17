@@ -1,10 +1,10 @@
 package Vista;
 
-import Dao.ClienteDaoR;
+import Dao.ClienteDao;
 import Dao.ContratoDao;
-import Entity.Cliente;
-import Entity.Contrato;
-import Entity.MiRenderer;
+import Modelo.Cliente;
+import Modelo.Contrato;
+import Modelo.MiRenderer;
 import static Vista.Contrato_Vista.espera;
 import static Vista.Interfaz.Contenedor;
 import java.awt.BorderLayout;
@@ -13,6 +13,7 @@ import java.awt.Point;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 public class ContratosC extends javax.swing.JDialog {
@@ -21,9 +22,11 @@ public class ContratosC extends javax.swing.JDialog {
     boolean cerrar = false;
     Component ubicacion;
     String opcion;
+    DefaultTableModel modelo;
 
     public ContratosC(int folio, String titulo, String opcion, Component ubicacion) {
         initComponents();
+        modelo = (DefaultTableModel) Mostrar.getModel();
         this.opcion = opcion;
         this.ubicacion = ubicacion;
         nuevo_cliente.setVisible(false);
@@ -230,8 +233,7 @@ public class ContratosC extends javax.swing.JDialog {
     private void AceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AceptarActionPerformed
         cerrar = true;
         if (opcion.equals("Contrato_Vista_nuevo")) {
-            Cliente cl = new Cliente();
-            Contrato_data CD = new Contrato_data(cl, "Nuevo Contrato", ubicacion, Integer.parseInt(Folio.getText()));
+            Contrato_data CD = new Contrato_data(ubicacion, "Nuevo Contrato", Integer.parseInt(Folio.getText()));
             Paneles(CD);
             espera.setVisible(false);
             this.dispose();
@@ -280,7 +282,7 @@ public class ContratosC extends javax.swing.JDialog {
     private void nuevo_clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevo_clienteActionPerformed
         cerrar = true;
 
-        Cliente_data Cd = new Cliente_data("Nuevo", ubicacion,0);
+        Cliente_data Cd = new Cliente_data("Nuevo", ubicacion, 0);
 
         this.dispose();
         Paneles(Cd);
@@ -309,19 +311,21 @@ public class ContratosC extends javax.swing.JDialog {
             Mostrar.setVisible(false);
             jScrollPane1.setVisible(false);
             Error.setText("No existen contratos");
+            Nombre.setVisible(false);
+            nombre.setVisible(false);
         }
 
     }
 
     private void Clientes(int folio) {
-        ClienteDaoR cs = new ClienteDaoR();
+        ClienteDao cs = new ClienteDao();
         List<Cliente> lista = cs.ClientesC(folio);
         int tam = lista.size();
         if (tam > 0) {
             String list[][] = new String[tam][6];
             for (int i = 0; i < tam; i++) {
                 list[i][0] = lista.get(i).getFolio_cliente().toString();
-                list[i][1] = lista.get(i).getNombre() + " " + lista.get(i).getApellido_p() + " " + lista.get(i).getApellido_m();
+                list[i][1] = lista.get(i).getNombre();
                 list[i][2] = lista.get(i).getResidencia();
                 list[i][3] = lista.get(i).getFecha_nac().toString();
                 list[i][4] = String.valueOf(lista.get(i).getNumero_manzana());
@@ -334,14 +338,14 @@ public class ContratosC extends javax.swing.JDialog {
     }
 
     private void Clientes_Existentes() {
-        ClienteDaoR cs = new ClienteDaoR();
+        ClienteDao cs = new ClienteDao();
         List<Cliente> lista = cs.MostrarClientes(0);
         int tam = lista.size();
         String list[][] = new String[tam][7];
 
         for (int i = 0; i < tam; i++) {
             list[i][0] = lista.get(i).getFolio_cliente().toString();
-            list[i][1] = lista.get(i).getNombre() + " " + lista.get(i).getApellido_p() + " " + lista.get(i).getApellido_m();
+            list[i][1] = lista.get(i).getNombre();
             list[i][2] = lista.get(i).getFecha_nac().toString();
             list[i][3] = lista.get(i).getCelular();
             list[i][4] = lista.get(i).getEmail();
