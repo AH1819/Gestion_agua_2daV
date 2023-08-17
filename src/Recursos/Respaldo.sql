@@ -1301,4 +1301,23 @@ GRANT SELECT,USAGE ON SEQUENCE public.lectura_pago_id_lect_pago_seq TO administr
 --
 -- PostgreSQL database dump complete
 --
+INSERT INTO public.cat_mes(1,'Enero');
+INSERT INTO public.cat_mes(2,'Febrero');
+INSERT INTO public.cat_mes(3,'Marzo');
+INSERT INTO public.cat_mes(4,'Abril');
+INSERT INTO public.cat_mes(5,'Mayo');
+INSERT INTO public.cat_mes(6,'Junio');
+INSERT INTO public.cat_mes(7,'Julio');
+INSERT INTO public.cat_mes(8,'Agosto');
+INSERT INTO public.cat_mes(9,'Septiembre');
+INSERT INTO public.cat_mes(10,'Octubre');
+INSERT INTO public.cat_mes(11,'Noviembre');
+INSERT INTO public.cat_mes(12,'Diciembre');
 
+INSERT INTO public.empresa('GESTION DE SERVICIO PUBLICO DE AGUA',
+	'H. Ayuntamiento de Cacahoatán','El detalle de pago se refiere al total de los adeudo considerando los abonos al pago mas antiguo xxx',
+	'Las presentes Condiciones Generales de contratación, junto con las Condiciones Particulares que, en cada caso y servicio, puedan establecerse (en lo sucesivo, y en conjunto, las “Condiciones de Contratación”) regulan expresamente las relaciones surgidas entre Telefónica Soluciones De Informática Y Comunicaciones De España S A (con su marca Hostalia, en adelante “acens”) y aquellos terceros que contraten los servicios que esta compañía ofrezca a tal efecto en cualquiera de sus páginas web o mediante contratación telefónica (los “Servicios”).',
+	'ROVA010130KQ6',
+	'Cacahoatán',
+	'Chiapas',
+	'');
